@@ -637,7 +637,8 @@ a.lab-card:hover .lab-card__name { color: var(--accent); }
   width: 190px; height: 190px; object-fit: cover; border-radius: 14px;
   border: 1px solid var(--border); box-shadow: var(--shadow); display: block; background: var(--bg-sunken);
 }
-.story__links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.story__social { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.story__social .btn { flex: 1 1 0; justify-content: center; white-space: nowrap; }
 .story__body p { margin-bottom: 12px; }
 .story__quote {
   margin: 18px 0 14px; padding: 14px 18px; border-left: 4px solid var(--accent-2);

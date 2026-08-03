@@ -47,6 +47,8 @@
   var ICON_EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
   var ICON_SCRIPT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
   var ICON_CHEV = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  var ICON_LINKEDIN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 2H3.54A1.54 1.54 0 0 0 2 3.54v16.92A1.54 1.54 0 0 0 3.54 22h16.92A1.54 1.54 0 0 0 22 20.46V3.54A1.54 1.54 0 0 0 20.45 2zM8.09 18.74h-3v-9h3zM6.59 8.48a1.74 1.74 0 1 1 0-3.48 1.74 1.74 0 0 1 0 3.48zm12.15 10.26h-3v-4.74c0-1.13-.02-2.58-1.57-2.58-1.58 0-1.82 1.23-1.82 2.5v4.82h-3v-9h2.88v1.32h.04a3.16 3.16 0 0 1 2.84-1.56c3.04 0 3.6 2 3.6 4.59z"/></svg>';
+  var ICON_YOUTUBE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.5a3 3 0 0 0-2.11-2.13C19.5 4 12 4 12 4s-7.5 0-9.39.37A3 3 0 0 0 .5 6.5 31 31 0 0 0 .13 12a31 31 0 0 0 .37 5.5 3 3 0 0 0 2.11 2.13C4.5 20 12 20 12 20s7.5 0 9.39-.37a3 3 0 0 0 2.11-2.13A31 31 0 0 0 23.87 12a31 31 0 0 0-.37-5.5zM9.75 15.5v-7l6 3.5z"/></svg>';
 
   function ring(pct, size) {
     size = size || 34;
@@ -283,9 +285,9 @@
           '<div class="story__aside">' +
             '<img class="story__photo" src="' + esc(sy.photo) + '" alt="' + esc(sy.photoAlt) + '"' +
             (sy.photoFallback ? ' onerror="this.onerror=null;this.src=\'' + esc(sy.photoFallback) + '\'"' : "") + '>' +
-            '<div class="story__links">' +
-              (sy.linkedin ? '<a class="chip" href="' + esc(sy.linkedin) + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>' : "") +
-              (sy.youtube ? '<a class="chip" href="' + esc(sy.youtube) + '" target="_blank" rel="noopener noreferrer">YouTube</a>' : "") +
+            '<div class="story__social">' +
+              (sy.linkedin ? '<a class="btn" href="' + esc(sy.linkedin) + '" target="_blank" rel="noopener noreferrer">' + ICON_LINKEDIN + "LinkedIn</a>" : "") +
+              (sy.youtube ? '<a class="btn" href="' + esc(sy.youtube) + '" target="_blank" rel="noopener noreferrer">' + ICON_YOUTUBE + "YouTube</a>" : "") +
             "</div>" +
           "</div>" +
           '<div class="story__body prose">' +
