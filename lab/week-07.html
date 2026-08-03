@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 7: Partitions, LVM, and Filesystems — LFCS Course</title>
+<meta name="description" content="This is where the second disk you added in the home lab starts earning its keep.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 7 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-07">&larr; Back to Week 7</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 7</div>
+    <h1>Partitions, LVM, and Filesystems</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">This is where the second disk you added in the home lab starts earning its keep.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">10-12 hours</span>
+      <span class="chip">A second, empty disk attached to this VM (10 GB is plenty)</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Confirm the spare disk is visible and empty: <code>lsblk</code></li><li>Snapshot this machine before you start — partitioning mistakes are the easiest ones to make unrecoverable</li></ul></div>
+
+  <div class="step"><h2>1. Identify and partition the spare disk</h2><p>parted works identically on both distros — this is genuinely distro-neutral ground.</p><div class="cmd"><div class="cmd__t">Find the disk, then create a GPT partition table with one partition</div><pre>lsblk
+sudo parted /dev/sdb --script mklabel gpt
+sudo parted /dev/sdb --script mkpart primary 0% 100%
+sudo parted /dev/sdb --script print
+lsblk /dev/sdb</pre></div></div><div class="step"><h2>2. Build LVM on top of it</h2><p>Physical volume, then volume group, then logical volume — same three commands everywhere.</p><div class="cmd"><div class="cmd__t">PV, VG, LV, in that order</div><pre>sudo pvcreate /dev/sdb1
+sudo vgcreate lfcs-vg /dev/sdb1
+sudo lvcreate -L 5G -n lfcs-lv lfcs-vg
+sudo pvs; sudo vgs; sudo lvs</pre></div></div><div class="step"><h2>3. Create and mount a filesystem</h2><p>Build ext4 in one spot and XFS in another so you've actually typed both.</p><div class="cmd"><div class="cmd__t">ext4 on the LV, mounted persistently by UUID</div><pre>sudo mkfs.ext4 /dev/lfcs-vg/lfcs-lv
+sudo mkdir -p /mnt/lfcs-data
+sudo blkid /dev/lfcs-vg/lfcs-lv
+echo '# add the UUID line below to /etc/fstab'
+echo "UUID=$(sudo blkid -s UUID -o value /dev/lfcs-vg/lfcs-lv)  /mnt/lfcs-data  ext4  defaults  0  2" | sudo tee -a /etc/fstab
+sudo mount -a
+df -h /mnt/lfcs-data</pre></div></div><div class="step"><h2>4. Extend a mounted volume without unmounting it</h2><p>The single most useful LVM party trick, and directly testable.</p><div class="cmd"><div class="cmd__t">Grow the LV and the filesystem live</div><pre>sudo lvextend -L +2G /dev/lfcs-vg/lfcs-lv
+sudo resize2fs /dev/lfcs-vg/lfcs-lv
+df -h /mnt/lfcs-data</pre></div></div><div class="step"><h2>5. Try XFS on a second logical volume</h2><p>You need to know both — XFS can't be shrunk, which is itself an exam-relevant fact.</p><div class="cmd"><div class="cmd__t">A second LV formatted XFS</div><pre>sudo lvcreate -L 2G -n lfcs-lv-xfs lfcs-vg
+sudo mkfs.xfs /dev/lfcs-vg/lfcs-lv-xfs
+sudo mkdir -p /mnt/lfcs-xfs
+echo "UUID=$(sudo blkid -s UUID -o value /dev/lfcs-vg/lfcs-lv-xfs)  /mnt/lfcs-xfs  xfs  defaults  0  2" | sudo tee -a /etc/fstab
+sudo mount -a
+df -hT /mnt/lfcs-xfs</pre></div></div><div class="step"><h2>6. Swap space, two ways</h2><p>A dedicated swap LV, and a swap file for when you don't have spare block storage.</p><div class="cmd"><div class="cmd__t">Swap on an LV</div><pre>sudo lvcreate -L 1G -n lfcs-swap lfcs-vg
+sudo mkswap /dev/lfcs-vg/lfcs-swap
+sudo swapon /dev/lfcs-vg/lfcs-swap
+echo "/dev/lfcs-vg/lfcs-swap  none  swap  sw  0  0" | sudo tee -a /etc/fstab
+swapon --show</pre></div><div class="cmd"><div class="cmd__t">A swap file instead</div><pre>sudo fallocate -l 512M /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=512
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+free -h</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>sudo lvs                          # both LVs present, sizes correct</li><li>df -h /mnt/lfcs-data /mnt/lfcs-xfs</li><li>swapon --show                     # both swap sources listed</li><li>sudo mount -a                     # fstab has no errors, everything (re)mounts clean</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo sed -i 's#UUID=.*lfcs-data#UUID=00000000-0000-0000-0000-000000000000  /mnt/lfcs-data#' /etc/fstab</pre></div><p><strong>What you'll see:</strong> sudo mount -a fails with a 'special device does not exist' error, and on a real reboot this machine would stop at an emergency shell.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo blkid -s UUID -o value /dev/lfcs-vg/lfcs-lv
+# replace the fake UUID in /etc/fstab with the real one, then:
+sudo mount -a</pre></div><p><strong>Why it matters:</strong> A bad UUID in fstab is one of the most common self-inflicted outages, and on real hardware it doesn't just fail a mount — it can strand the whole boot. Always run mount -a to test fstab changes before you trust them.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-06.html">&larr; Lab 6</a></span>
+    <span><a class="btn btn--primary" href="week-08.html">Lab 8 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

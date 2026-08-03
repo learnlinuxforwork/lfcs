@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 6: Virtual Machines, Containers, and SELinux/AppArmor — LFCS Course</title>
+<meta name="description" content="The exam's virtualization and security objectives in one week — build a VM, run a container, fix a denial.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 6 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-06">&larr; Back to Week 6</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 6</div>
+    <h1>Virtual Machines, Containers, and SELinux/AppArmor</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The exam's virtualization and security objectives in one week — build a VM, run a container, fix a denial.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Week 5 complete. This week needs real console access — do it on the local hypervisor, not a cloud instance.</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Hardware virtualization support confirmed: <code>egrep -c '(vmx|svm)' /proc/cpuinfo</code> returns non-zero</li><li>If you're labbing inside a VM already, enable nested virtualization in your hypervisor first</li></ul></div>
+
+  <div class="step"><h2>1. Install a local hypervisor stack</h2><p>libvirt/KVM is the same engine under the hood on both — the package names differ slightly.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — Install libvirt/KVM tooling</div><pre>sudo apt install -y qemu-kvm libvirt-daemon-system virtinst bridge-utils
+sudo systemctl enable --now libvirtd
+virsh list --all</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — Install libvirt/KVM tooling</div><pre>sudo dnf install -y qemu-kvm libvirt virt-install
+sudo systemctl enable --now libvirtd
+virsh list --all</pre></div></div><div class="step"><h2>2. Build and manage a VM from the command line</h2><p>virsh and virt-install are identical regardless of host distro.</p><div class="cmd"><div class="cmd__t">Create a minimal VM (adjust the ISO path to whatever you downloaded)</div><pre>sudo virt-install \
+  --name lfcs-test-vm --memory 1024 --vcpus 1 \
+  --disk size=8 --cdrom /path/to/some.iso \
+  --network network=default --graphics none --noautoconsole</pre></div><div class="cmd"><div class="cmd__t">Manage it once it exists</div><pre>virsh list --all
+virsh start lfcs-test-vm 2>/dev/null
+virsh dominfo lfcs-test-vm
+virsh shutdown lfcs-test-vm 2>/dev/null || true</pre></div></div><div class="step"><h2>3. Install and run a container engine</h2><p>Docker needs its own repo; Podman ships in Rocky's default repos.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — Install Docker</div><pre>curl -fsSL https://get.docker.com | sudo sh
+sudo systemctl enable --now docker
+sudo docker run --rm hello-world</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — Install Podman</div><pre>sudo dnf install -y podman
+podman run --rm hello-world</pre></div></div><div class="step"><h2>4. Build a minimal container image</h2><p>A Containerfile and a Dockerfile are the same format — Podman reads Dockerfile syntax natively.</p><div class="cmd"><div class="cmd__t">Write a two-line image and build it (adjust the run command to docker or podman)</div><pre>mkdir ~/lfcs-container && cd ~/lfcs-container
+cat > Dockerfile <<'EOF'
+FROM alpine:latest
+CMD ["echo", "built by lfcs lab"]
+EOF
+docker build -t lfcs-test . 2>/dev/null || podman build -t lfcs-test .
+docker run --rm lfcs-test 2>/dev/null || podman run --rm lfcs-test</pre></div></div><div class="step"><h2>5. Rocky / RHEL — read and fix an SELinux denial</h2><p>Never disable SELinux to make an error go away. Learn to read the denial instead.</p><div class="cmd"><div class="cmd__t">Cause a real denial: serve a file from a non-standard, unlabeled location</div><pre>sudo dnf install -y httpd
+sudo systemctl enable --now httpd
+mkdir -p /srv/lfcs-web
+echo 'lfcs test page' | sudo tee /srv/lfcs-web/index.html
+sudo sed -i 's#DocumentRoot.*#DocumentRoot "/srv/lfcs-web"#' /etc/httpd/conf/httpd.conf
+sudo systemctl restart httpd
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost/</pre></div><div class="cmd"><div class="cmd__t">Read the denial, then fix the context — not the setting</div><pre>sudo ausearch -m avc -ts recent | tail -20
+ls -Zd /srv/lfcs-web
+sudo semanage fcontext -a -t httpd_sys_content_t "/srv/lfcs-web(/.*)?"
+sudo restorecon -Rv /srv/lfcs-web
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost/</pre></div></div><div class="step"><h2>6. Ubuntu — read and manage an AppArmor profile</h2><p>AppArmor profiles are path-based, not label-based, but the workflow is analogous.</p><div class="cmd"><div class="cmd__t">Check status, then flip a profile between enforce and complain</div><pre>sudo aa-status
+sudo aa-complain /etc/apparmor.d/usr.sbin.tcpdump 2>/dev/null || echo 'install a package with a shipped profile to test, e.g. tcpdump'
+sudo aa-enforce /etc/apparmor.d/usr.sbin.tcpdump 2>/dev/null</pre></div><div class="cmd"><div class="cmd__t">Read denials from the kernel log</div><pre>sudo dmesg | grep -i apparmor | tail -10
+sudo journalctl -k | grep -i apparmor | tail -10</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>virsh list --all | grep lfcs-test-vm</li><li>docker images 2&gt;/dev/null | grep lfcs-test || podman images | grep lfcs-test</li><li>curl -s -o /dev/null -w '%{http_code}\n' http://localhost/    # Rocky: expect 200, not 403</li><li>sudo aa-status | head -3   # Ubuntu only</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo semanage fcontext -a -t default_t "/srv/lfcs-web(/.*)?"
+sudo restorecon -Rv /srv/lfcs-web</pre></div><p><strong>What you'll see:</strong> The 200 becomes a 403 again — you just relabeled the content back to a context httpd isn't allowed to read.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo semanage fcontext -a -t httpd_sys_content_t "/srv/lfcs-web(/.*)?"
+sudo restorecon -Rv /srv/lfcs-web</pre></div><p><strong>Why it matters:</strong> This is the SELinux denial that traps the most candidates: the fix isn't a boolean toggle, it's putting the file context back to what the service is actually permitted to read. semanage + restorecon is the pattern, every time.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-05.html">&larr; Lab 5</a></span>
+    <span><a class="btn btn--primary" href="week-07.html">Lab 7 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 1: Shell, Permissions, and Text Processing — LFCS Course</title>
+<meta name="description" content="The commands you'll use in every other week, drilled on both Ubuntu and Rocky from day one.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 1 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-01">&larr; Back to Week 1</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 1</div>
+    <h1>Shell, Permissions, and Text Processing</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The commands you'll use in every other week, drilled on both Ubuntu and Rocky from day one.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Both lab machines installed and reachable</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Both lab machines installed — one Ubuntu, one Rocky Linux</li><li>You are logged in as a non-root user with sudo rights on both</li><li>Take a snapshot of both machines. You will break things on purpose.</li></ul></div>
+
+  <div class="step"><h2>1. Find your way around</h2><p>Prove to yourself where things live. The exam assumes you can navigate without thinking about it.</p><div class="cmd"><div class="cmd__t">Where am I, and what is here? (both distros)</div><pre>pwd
+ls -la /etc | head
+ls -ld /var/log /usr/share/doc /home</pre></div><div class="cmd"><div class="cmd__t">Follow a file back to the package that owns it — Ubuntu</div><pre>which sshd || command -v sshd
+ls -l /usr/sbin/sshd
+dpkg -S /usr/sbin/sshd</pre></div><div class="cmd"><div class="cmd__t">Follow a file back to the package that owns it — Rocky</div><pre>which sshd || command -v sshd
+ls -l /usr/sbin/sshd
+rpm -qf /usr/sbin/sshd</pre></div></div><div class="step"><h2>2. Redirection and pipes</h2><p>Every one of these appears on the exam by name. Run each and read the result before moving on.</p><div class="cmd"><div class="cmd__t">Standard output, append, and standard error</div><pre>ls /etc > ~/etc-list.txt
+ls /nope 2> ~/errors.txt
+ls /etc /nope > ~/both.txt 2>&1
+echo 'appended line' >> ~/etc-list.txt
+wc -l ~/etc-list.txt ~/errors.txt ~/both.txt</pre></div><div class="cmd"><div class="cmd__t">Pipe into a filter, and tee to a file while still seeing output</div><pre>ps aux | wc -l
+ps aux | tee ~/procs.txt | grep -c sshd</pre></div></div><div class="step"><h2>3. grep and regular expressions</h2><p>Anchors, character classes, and quantifiers cover almost everything the exam asks of you.</p><div class="cmd"><div class="cmd__t">Anchors and case</div><pre>grep '^root' /etc/passwd
+grep 'bash$' /etc/passwd
+grep -i 'ROOT' /etc/passwd</pre></div><div class="cmd"><div class="cmd__t">Character classes and quantifiers</div><pre>grep -E '^[a-z]+:x:[0-9]{4,}:' /etc/passwd
+grep -E 'nologin|false' /etc/passwd | wc -l</pre></div><div class="cmd"><div class="cmd__t">Recursive search, with filename and line number</div><pre>sudo grep -rn 'PermitRootLogin' /etc/ssh/ 2>/dev/null</pre></div></div><div class="step"><h2>4. Files, directories, and links</h2><p>Note carefully what happens to each link type when the target disappears. That difference is testable.</p><div class="cmd"><div class="cmd__t">Create a working tree</div><pre>mkdir -p ~/lab01/{src,dst}
+echo 'original content' > ~/lab01/src/original.txt
+cp ~/lab01/src/original.txt ~/lab01/dst/copy.txt
+mv ~/lab01/dst/copy.txt ~/lab01/dst/renamed.txt</pre></div><div class="cmd"><div class="cmd__t">Hard link versus symbolic link</div><pre>ln ~/lab01/src/original.txt ~/lab01/src/hardlink.txt
+ln -s ~/lab01/src/original.txt ~/lab01/src/symlink.txt
+ls -li ~/lab01/src/</pre></div><div class="cmd"><div class="cmd__t">Break the target and see which link survives</div><pre>rm ~/lab01/src/original.txt
+cat ~/lab01/src/hardlink.txt
+cat ~/lab01/src/symlink.txt</pre></div></div><div class="callout"><div class="callout__title">Worth knowing</div><p>The hard link still prints the content because it points at the same inode. The symlink is now dangling and fails. Being able to explain that out loud, on either distro, is the point.</p></div><div class="step"><h2>5. Permissions and ACLs</h2><p>Set the same permission set both ways so octal and symbolic become interchangeable, then layer an ACL on top.</p><div class="cmd"><div class="cmd__t">Symbolic and octal, same result</div><pre>touch ~/lab01/perms.txt
+chmod u=rw,g=r,o= ~/lab01/perms.txt
+ls -l ~/lab01/perms.txt
+chmod 640 ~/lab01/perms.txt
+ls -l ~/lab01/perms.txt</pre></div><div class="cmd"><div class="cmd__t">Grant a second user access without touching the group</div><pre>sudo setfacl -m u:adm:rwx ~/lab01/perms.txt 2>/dev/null || sudo setfacl -m u:$(id -un):rwx ~/lab01/perms.txt
+getfacl ~/lab01/perms.txt</pre></div></div><div class="step"><h2>6. Archives</h2><p>All three compression tools are named in the objectives. Create and extract with each.</p><div class="cmd"><div class="cmd__t">tar with gzip and with bzip2</div><pre>tar -czf ~/lab01-gzip.tar.gz -C ~ lab01
+tar -cjf ~/lab01-bzip2.tar.bz2 -C ~ lab01
+ls -lh ~/lab01-*</pre></div><div class="cmd"><div class="cmd__t">Inspect before extracting, then extract elsewhere</div><pre>tar -tzf ~/lab01-gzip.tar.gz | head
+mkdir -p ~/restore
+tar -xzf ~/lab01-gzip.tar.gz -C ~/restore
+ls -R ~/restore | head</pre></div></div><div class="step"><h2>7. Remote access and switching users</h2><p>You'll use this connection in most later labs, so confirm it works now.</p><div class="cmd"><div class="cmd__t">Connect to the second machine and come back</div><pre>ssh $(whoami)@&lt;other-machine-ip&gt; 'hostname; uptime'
+ssh $(whoami)@&lt;other-machine-ip&gt;</pre></div><div class="cmd"><div class="cmd__t">Switch users properly</div><pre>su - $(whoami)
+sudo -i
+whoami
+exit</pre></div></div><div class="step"><h2>8. Answer your own questions</h2><p>This is the habit that matters most. In the exam there is no internet, only these.</p><div class="cmd"><div class="cmd__t">Search by keyword, then read the right section</div><pre>man -k passwd | head
+man 5 passwd
+man 1 passwd</pre></div><div class="cmd"><div class="cmd__t">The documentation that ships with packages</div><pre>ls /usr/share/doc | head -20</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>grep -c '' ~/etc-list.txt   # the file exists and has lines</li><li>ls -li ~/lab01/src/         # hardlink shares an inode with nothing now; symlink is broken</li><li>getfacl ~/lab01/perms.txt   # the ACL entry is present</li><li>tar -tzf ~/lab01-gzip.tar.gz &gt;/dev/null &amp;&amp; echo 'archive readable'</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>chmod 000 ~/lab01/dst</pre></div><p><strong>What you'll see:</strong> You can no longer list or enter the directory, even though you own it.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>chmod 755 ~/lab01/dst</pre></div><p><strong>Why it matters:</strong> Owning a file does not grant access; the permission bits still apply to you. This exact pattern shows up as a "diagnose and correct a permission problem" task.</p></div>
+
+  <div class="lab-nav">
+    <span><span></span></span>
+    <span><a class="btn btn--primary" href="week-02.html">Lab 2 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 9: IP Addressing, DNS, and SSH — LFCS Course</title>
+<meta name="description" content="The first half of the exam's biggest domain: get two machines talking and resolving names correctly.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 9 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-09">&larr; Back to Week 9</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 9</div>
+    <h1>IP Addressing, DNS, and SSH</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The first half of the exam's biggest domain: get two machines talking and resolving names correctly.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Week 8 complete</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Both machines up</li><li>You know the interface name on each: <code>ip link</code></li></ul></div>
+
+  <div class="step"><h2>1. Configure a static IPv4 address</h2><p>Ubuntu owns networking through netplan/systemd-networkd; Rocky through NetworkManager.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — netplan (adjust the interface name and addresses to your lab)</div><pre>cat /etc/netplan/*.yaml
+sudo tee /etc/netplan/99-lfcs-lab.yaml >/dev/null <<'EOF'
+network:
+  version: 2
+  ethernets:
+    eth1:
+      addresses: [192.168.56.10/24]
+      dhcp4: false
+EOF
+sudo netplan apply
+ip addr show eth1</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — nmcli</div><pre>nmcli con show
+sudo nmcli con add type ethernet ifname eth1 con-name lfcs-lab ip4 192.168.56.11/24
+sudo nmcli con up lfcs-lab
+ip addr show eth1</pre></div></div><div class="step"><h2>2. Add an IPv6 address alongside it</h2><p>Same tools, same workflow, one more address family.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — netplan</div><pre>sudo sed -i '/eth1:/a\      addresses: [192.168.56.10/24, fd00:lfcs::10/64]' /etc/netplan/99-lfcs-lab.yaml
+sudo netplan apply
+ip -6 addr show eth1</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — nmcli</div><pre>sudo nmcli con mod lfcs-lab ipv6.method manual ipv6.addresses fd00:lfcs::11/64
+sudo nmcli con up lfcs-lab
+ip -6 addr show eth1</pre></div></div><div class="step"><h2>3. DNS resolution</h2><p>Both distros lean on systemd-resolved or plain /etc/resolv.conf — check which one you actually have before editing.</p><div class="cmd"><div class="cmd__t">Check what's managing resolution, then confirm it works</div><pre>resolvectl status 2>/dev/null | head -10 || cat /etc/resolv.conf
+getent hosts localhost
+dig +short example.com 2>/dev/null || nslookup example.com</pre></div></div><div class="step"><h2>4. Time synchronization with chrony</h2><p>Identical tool and config file location on both distros — a rare gift.</p><div class="cmd"><div class="cmd__t">Install if needed, then check sync status</div><pre>sudo apt install -y chrony 2>/dev/null || sudo dnf install -y chrony
+sudo systemctl enable --now chronyd
+chronyc tracking
+chronyc sources -v</pre></div></div><div class="step"><h2>5. Harden SSH</h2><p>Same config file, same directives, on both distros.</p><div class="cmd"><div class="cmd__t">Key-based auth, no root login, non-default port</div><pre>ssh-keygen -t ed25519 -C 'lfcs-lab' -f ~/.ssh/lfcs_lab -N ''
+ssh-copy-id -i ~/.ssh/lfcs_lab.pub $(whoami)@&lt;other-machine-ip&gt;
+sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo sed -i 's/^#\?Port.*/Port 2222/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
+ssh -p 2222 -i ~/.ssh/lfcs_lab $(whoami)@&lt;other-machine-ip&gt; 'echo connected'</pre></div></div><div class="step"><h2>6. Copy files over SSH</h2><p>scp and rsync both ride on the SSH connection you just hardened.</p><div class="cmd"><div class="cmd__t">Both tools, same target</div><pre>scp -P 2222 -i ~/.ssh/lfcs_lab ~/lab01/perms.txt $(whoami)@&lt;other-machine-ip&gt;:/tmp/
+rsync -avz -e 'ssh -p 2222 -i ~/.ssh/lfcs_lab' ~/lab01/ $(whoami)@&lt;other-machine-ip&gt;:/tmp/lab01-rsync/</pre></div></div><div class="step"><h2>7. Inspect connections and interfaces</h2><p>ss and ip replace the old netstat and ifconfig — the exam expects the current tools.</p><div class="cmd"><div class="cmd__t">Current sockets and interface state</div><pre>ss -tulpn | head -15
+ip -s link show eth1</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>ip addr show eth1              # both IPv4 and IPv6 addresses present</li><li>chronyc tracking | grep 'Leap status'</li><li>sudo sshd -T | grep -i permitrootlogin    # should read 'no'</li><li>ss -tlnp | grep ':2222'</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo sed -i 's/^Port 2222/Port 22999/' /etc/ssh/sshd_config
+sudo systemctl restart sshd</pre></div><p><strong>What you'll see:</strong> Every SSH connection to this machine on port 2222 now refuses — you're locked out unless you already have a session open or console access.</p><p><strong>Fix:</strong></p><div class="cmd"><pre># from an existing open session or the console:
+sudo sed -i 's/^Port 22999/Port 2222/' /etc/ssh/sshd_config
+sudo systemctl restart sshd</pre></div><p><strong>Why it matters:</strong> Never restart sshd on a change you haven't verified from a second session first. This is exactly why you keep one terminal connected while you test SSH config changes in another — the exam will not forgive locking yourself out.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-08.html">&larr; Lab 8</a></span>
+    <span><a class="btn btn--primary" href="week-10.html">Lab 10 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

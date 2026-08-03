@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 11: Integration and Break/Fix Week — LFCS Course</title>
+<meta name="description" content="No new material. Combine everything into realistic, multi-step problems and time yourself.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 11 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-11">&larr; Back to Week 11</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 11</div>
+    <h1>Integration and Break/Fix Week</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">No new material. Combine everything into realistic, multi-step problems and time yourself.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">10-12 hours</span>
+      <span class="chip">Weeks 1-10 complete on both machines</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Snapshot both machines now, before you start breaking things</li><li>Have a timer ready — a phone timer is fine</li></ul></div>
+
+  <div class="step"><h2>1. Drill A — storage + networking (45 minutes)</h2><p>Cross-domain, timed. Don't look at earlier weeks unless you get stuck for more than 10 minutes.</p><div class="cmd"><div class="cmd__t">Set it up</div><pre>echo '=== Task: extend the lfcs-lv logical volume by 1G, format the extra space is not needed — just grow the filesystem in place, then export the mount point over NFS to the other lab machine and mount it there persistently. ==='</pre></div></div><div class="step"><h2>2. Drill B — users + security (45 minutes)</h2><p>Combine an access-control task with a mandatory-access-control task.</p><div class="cmd"><div class="cmd__t">Set it up</div><pre>echo '=== Task: create a new user restricted to a single directory via ACLs, then confirm SELinux/AppArmor does not silently block that access once a service tries to read a file the user created. ==='</pre></div></div><div class="step"><h2>3. Drill C — scheduling + services (45 minutes)</h2><p>A timer that manages a service, with a deliberate ordering dependency.</p><div class="cmd"><div class="cmd__t">Set it up</div><pre>echo '=== Task: write a systemd timer that restarts a service every 10 minutes only if a specific log file has grown in size since the last check. ==='</pre></div></div><div class="step"><h2>4. Full rebuild from a clean snapshot</h2><p>Prove you can stand the whole two-machine topology back up from nothing, on both distros.</p><div class="cmd"><div class="cmd__t">Roll back and rebuild</div><pre>echo 'Restore both VMs to their pre-Week-1 snapshot in your hypervisor UI.'
+echo 'Reinstall the base OS updates, recreate lfcsuser, rejoin the two machines over SSH, and re-run the Week 7 LVM build end to end — this time without this guide open.'</pre></div></div><div class="step"><h2>5. Break five things blind</h2><p>One per domain. Don't write down what you did. Then diagnose and fix each cold, exactly like exam day.</p><div class="cmd"><div class="cmd__t">The five, pick your own specific break for each</div><pre>echo '1. Essential Commands — corrupt a systemd unit file syntax error'
+echo '2. Users and Groups — misconfigure a sudoers rule'
+echo '3. Operations Deployment — mask a critical timer or service'
+echo '4. Storage — put a bad UUID in fstab'
+echo '5. Networking — block a port the load balancer needs'</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>All three timed drills completed within their time box, or you know exactly which step ran over and why</li><li>Full topology rebuild completed without this guide open</li><li>All five blind breaks diagnosed and fixed, and you wrote down the fix afterward for your break/fix log</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre># This week IS the break/fix drill — see steps 4 and 5 above.</pre></div><p><strong>What you'll see:</strong> Whatever you chose to break, cold, without a script telling you what changed.</p><p><strong>Fix:</strong></p><div class="cmd"><pre># Diagnose from first principles: systemctl status, journalctl, mount -a, ss, and the audit log are your five best friends.</pre></div><p><strong>Why it matters:</strong> By Week 11 the specific commands matter less than your diagnostic process. If you can walk into a broken system with no hints and find the fault in under 10 minutes, you're ready for Week 12.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-10.html">&larr; Lab 10</a></span>
+    <span><a class="btn btn--primary" href="week-12.html">Lab 12 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

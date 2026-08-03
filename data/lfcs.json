@@ -1,0 +1,957 @@
+{
+  "meta": {
+    "title": "LFCS Course",
+    "subtitle": "Zero to Linux Foundation Certified System Administrator",
+    "tagline": "Distro-neutral by design — every lab works on Ubuntu/Debian and on RHEL/Rocky.",
+    "exam": "LFCS",
+    "edition": "2026",
+    "preparedFor": "Anyone who can't drop $3,000 on a bootcamp",
+    "site": "https://lfcs.learnlinuxforwork.com",
+    "org": "Shea's Tech",
+    "author": "Shea",
+    "links": {
+      "linuxTraining": "https://www.learnlinuxforwork.com",
+      "docLinux": "https://learnlinuxforwork.com/doc-linux",
+      "rhcsa": "https://rhcsa.learnlinuxforwork.com",
+      "devops": "https://free.learnlinuxforwork.com"
+    }
+  },
+
+  "hero": {
+    "stats": [
+      { "value": "12", "label": "weeks" },
+      { "value": "12", "label": "lab guides" },
+      { "value": "5", "label": "exam domains" },
+      { "value": "$0", "label": "to start" }
+    ]
+  },
+
+  "overview": {
+    "id": "how-it-works",
+    "num": "01",
+    "eyebrow": "01 · Overview",
+    "title": "How This Course Works",
+    "subtitle": "Twelve weeks from first shell prompt to a passing score, on any distro",
+    "body": [
+      "The LFCS is not a multiple-choice exam. You are dropped onto a live Linux system with a list of tasks and a two-hour clock. Nothing is graded on how you did it — only on whether the machine ends up in the required state. That single fact should shape everything about how you study.",
+      "So this course is built around doing, not reading. Every week has a focus, a short list of tasks, and a <strong>full lab guide</strong> with the actual commands, the verification step, and a break/fix drill that forces you to recover from something you broke on purpose. If you finish a week without having typed anything, you haven't finished the week.",
+      "The Linux Foundation grades the LFCS <strong>independent of distribution</strong> — no specific distro is required or assumed. That is the entire reason this course is built the way it is: every lab guide gives you the command for a Debian-family system (Ubuntu) and the command for an RPM-family system (Rocky Linux / RHEL) side by side, so you are never stuck translating mid-task."
+    ],
+    "rhythm": [
+      { "pct": "65%", "text": "hands-on labs on a machine you can break and rebuild" },
+      { "pct": "25%", "text": "reading man pages and official docs — the only reference you get in the exam" },
+      { "pct": "10%", "text": "review — write down every command that didn't work the first time" }
+    ],
+    "pacing": {
+      "headers": ["Track", "Duration", "Hrs/wk", "How it runs"],
+      "rows": [
+        ["Standard", "12 weeks", "8–10", "One week per module. Realistic for a working adult starting near zero."],
+        ["Intensive", "6 weeks", "16–20", "Two modules per calendar week. Best if you have prior Linux exposure or are job-searching full time."],
+        ["Extended", "18 weeks", "5–6", "Stretch each module by half. Better than quitting because the pace was unrealistic."]
+      ]
+    },
+    "note": {
+      "kind": "warn",
+      "title": "Learn the concept, not the distro",
+      "text": "The LFCS will not tell you which distro you're on and won't accept \"but that's how Ubuntu does it\" as an excuse. Every lab guide in this course drills the same task twice — once with <code>apt</code>/<code>systemd-networkd</code>-style tooling, once with <code>dnf</code>/<code>nmcli</code>-style tooling — until the underlying concept is what you know, not a memorized command line."
+    }
+  },
+
+  "exam": {
+    "id": "the-exam",
+    "num": "02",
+    "eyebrow": "02 · The exam",
+    "title": "What the LFCS Actually Is",
+    "subtitle": "Format, domains, and what the graders care about",
+    "body": [
+      "Knowing the shape of the exam changes how you practise. The LFCS is a performance-based, hands-on exam delivered online and proctored — you solve real command-line tasks on a live system. There are no multiple-choice questions and no partial credit for knowing the theory out loud."
+    ],
+    "facts": [
+      { "k": "Format", "v": "Online, proctored, performance-based — command-line tasks on a live system" },
+      { "k": "Duration", "v": "2 hours" },
+      { "k": "Tasks", "v": "Roughly 20–25 discrete problems to solve" },
+      { "k": "Distribution", "v": "Independent of distribution — no specific distro required or assumed" },
+      { "k": "Internet access", "v": "None during the exam" },
+      { "k": "Documentation", "v": "man pages and locally installed docs are available; no notes, no books" },
+      { "k": "Validity", "v": "2 years from the date you pass" },
+      { "k": "Attempts", "v": "Exam purchase includes two exam attempts and two 36-hour simulator sessions, within a 12-month window" }
+    ],
+    "domains": {
+      "title": "The five exam domains",
+      "headers": ["Domain", "Weight", "Covers"],
+      "rows": [
+        ["Operations Deployment", "25%", "Kernel configuration, process management, job scheduling, software maintenance, disaster recovery, virtual machines, containers, SELinux/AppArmor"],
+        ["Networking", "25%", "IPv4/IPv6 addressing, DNS, time synchronization, SSH, packet filtering, routing, bonding, load balancers"],
+        ["Storage", "20%", "LVM, virtual filesystems, filesystem management, remote storage, swap space, storage performance monitoring"],
+        ["Essential Commands", "20%", "Shell fluency, Git, service creation, performance troubleshooting, application resource constraints, SSL certificates"],
+        ["Users and Groups", "10%", "Account management, environment/profile configuration, resource limits, ACLs, LDAP integration"]
+      ]
+    },
+    "implications": {
+      "title": "What that means for how you study",
+      "bullets": [
+        "<strong>Learn the man pages, not one distro's wiki.</strong> They're the only reference you get, and they read the same on every distro. Practise <code>man -k</code> and section numbers until they're faster than a search engine would be.",
+        "<strong>Practise the same task twice, on two families.</strong> Once on something Debian-based, once on something RPM-based. If you can only do it one way, you don't know it yet — you've memorized it.",
+        "<strong>Speed matters, but correctness matters more.</strong> A half-finished task scores nothing. Finish and verify each task before moving to the next.",
+        "<strong>Never memorise a GUI path.</strong> Everything in this course runs at the command line, because that's what's reliably available under exam conditions.",
+        "<strong>There is no partial credit for approach.</strong> If <code>ip</code> and <code>nmcli</code> both get the network config right, both are correct. Use whichever you're fastest with."
+      ]
+    },
+    "note": {
+      "kind": "info",
+      "title": "Read the objectives yourself — from the source",
+      "text": "The Linux Foundation publishes the full LFCS domain list, and it is the only authoritative statement of what is testable. Everything in this course maps to it. Bookmark it and re-read it in Week 11: <a href=\"https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/\" target=\"_blank\" rel=\"noopener\">training.linuxfoundation.org — LFCS certification details</a>."
+    }
+  },
+
+  "homelab": {
+    "id": "home-lab",
+    "num": "03",
+    "eyebrow": "03 · Home lab",
+    "title": "Build Your Home Lab",
+    "subtitle": "Two virtual machines, a free hypervisor, and two different Linux families — that's the whole setup",
+    "body": [
+      "You need at least two Linux systems you're willing to destroy, and — because this exam is distro-neutral — you get the most out of this course if those two systems come from <strong>different families</strong>: one Debian-based, one RPM-based. Virtual machines are ideal. They snapshot, they roll back, and breaking one costs you nothing.",
+      "A laptop you already own plus a free hypervisor and two free operating system downloads is the entire minimum investment. Everything below assumes that setup."
+    ],
+    "startHere": {
+      "kind": "success",
+      "title": "Start here — the three-step path",
+      "steps": [
+        "Install <strong>Ubuntu Server</strong> (free, no account) on one VM and <strong>Rocky Linux</strong> (free, no account) on a second. That single pairing covers both families the exam is built around.",
+        "Pick a free hypervisor — Oracle VirtualBox is the default recommendation below — and give each VM 2 vCPU, 2–4 GB RAM, and a 20 GB disk, plus a second empty 10 GB disk for the storage weeks.",
+        "Snapshot both machines the moment install finishes. Then break them on purpose, every single week, and put them back."
+      ]
+    },
+    "budgetNote": {
+      "kind": "warn",
+      "title": "Don't overbuy",
+      "text": "Two virtual machines on a laptop you already own costs nothing and is enough for the entire exam. Buy hardware only if your current machine can't spare 8 GB of RAM. There is no lab in this course that needs a server, a rack, or a homelab shopping list."
+    },
+    "groups": [
+      {
+        "step": "Step 1",
+        "title": "Pick a hypervisor and size the VMs",
+        "intro": "Everything in this course runs on two virtual machines. Any of these will do it — pick the one that matches your hardware and stop researching.",
+        "columns": ["Hypervisor", "Why you'd pick it", "Cost"],
+        "items": [
+          {
+            "name": "Oracle VirtualBox",
+            "sub": "virtualbox.org",
+            "url": "https://www.virtualbox.org/",
+            "desc": "<strong>The default choice for this course.</strong> Free, open source, and runs on Linux, macOS (Intel), and Windows hosts. Snapshots are one click and easy to roll back, which matters — you will break these machines every week. Use the built-in <em>Host-only Adapter</em> for the private lab network.",
+            "meta": "Free"
+          },
+          {
+            "name": "VMware Workstation Pro",
+            "sub": "Broadcom — support.broadcom.com",
+            "url": "https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion",
+            "desc": "Free for personal use under Broadcom. Noticeably faster disk and network performance than VirtualBox on most hardware. Fusion is the equivalent on Mac.",
+            "meta": "Free for personal use"
+          },
+          {
+            "name": "KVM / virt-manager",
+            "sub": "libvirt on a Linux host",
+            "url": "https://virt-manager.org/",
+            "desc": "If your daily driver is already Linux, this is the fastest, lightest option — and it's the same virtualization stack the exam's own \"virtual machines\" objective expects you to understand.",
+            "meta": "Free"
+          },
+          {
+            "name": "UTM",
+            "sub": "mac.getutm.app",
+            "url": "https://mac.getutm.app/",
+            "desc": "The practical option on Apple Silicon, where VirtualBox doesn't run. Emulates or virtualises aarch64 guests — both Ubuntu and Rocky ship aarch64 images.",
+            "meta": "Free"
+          }
+        ]
+      },
+      {
+        "step": "Step 2",
+        "title": "Get both operating systems",
+        "intro": "You want one guest from each family. These two, specifically, are what the lab guides in this course are written against.",
+        "columns": ["Distro", "Family", "Why this one"],
+        "items": [
+          {
+            "name": "Ubuntu Server",
+            "sub": "ubuntu.com/download/server",
+            "url": "https://ubuntu.com/download/server",
+            "desc": "The Debian family. No account required. Ships <code>apt</code>, <code>netplan</code>/<code>systemd-networkd</code>, and AppArmor — the tooling roughly half of this exam's tasks expect.",
+            "meta": "Free · unlimited"
+          },
+          {
+            "name": "Rocky Linux",
+            "sub": "rockylinux.org",
+            "url": "https://rockylinux.org/",
+            "desc": "The RPM family, a free RHEL rebuild. No account required. Ships <code>dnf</code>, <code>NetworkManager</code>/<code>nmcli</code>, and SELinux — the other half of the exam's tooling.",
+            "meta": "Free · unlimited"
+          }
+        ]
+      }
+    ]
+  },
+
+  "cloud": {
+    "id": "cloud-labs",
+    "num": "04",
+    "eyebrow": "04 · Cloud labs",
+    "title": "Self-Managed Cloud Hosted Labs",
+    "subtitle": "The same two machines on a provider you rent by the hour — for when the laptop can't spare the RAM",
+    "body": [
+      "If your machine can't host two virtual machines, rent them instead. A small instance pair costs roughly $10–20 per month if you leave it running, and far less if you destroy it between study sessions — which you should.",
+      "You don't need a custom script for this: create one Ubuntu instance and one Rocky Linux instance from each provider's own console, add a small second data volume to one of them for the storage weeks, and open SSH to your own IP only."
+    ],
+    "columns": ["Provider", "Why you'd pick it", "Console"],
+    "items": [
+      {
+        "name": "Google Cloud",
+        "sub": "console.cloud.google.com",
+        "url": "https://console.cloud.google.com/",
+        "desc": "Both Ubuntu and Rocky Linux images are first-class citizens in the marketplace. New accounts get free trial credit that can cover most of a 12-week run.",
+        "meta": "Free trial credit"
+      },
+      {
+        "name": "DigitalOcean",
+        "sub": "cloud.digitalocean.com",
+        "url": "https://cloud.digitalocean.com/",
+        "desc": "The simplest pricing of the four, with both distros in the catalogue and block volumes that attach cleanly for the LVM week.",
+        "meta": "~$6–12/mo per droplet"
+      },
+      {
+        "name": "Amazon Web Services",
+        "sub": "console.aws.amazon.com",
+        "url": "https://console.aws.amazon.com/",
+        "desc": "Ubuntu and Rocky AMIs are both available. Free tier covers a small instance pair if you watch the hours.",
+        "meta": "Free tier eligible"
+      },
+      {
+        "name": "Vultr",
+        "sub": "my.vultr.com",
+        "url": "https://my.vultr.com/",
+        "desc": "Cheap hourly instances and inexpensive block storage. Often the lowest total cost if you're disciplined about destroying the lab.",
+        "meta": "~$6/mo per instance"
+      }
+    ],
+    "after": {
+      "title": "Before you spend anything",
+      "bullets": [
+        "<strong>Set a billing alert on day one.</strong> Every provider offers one free, and every provider will happily bill you for an instance you forgot about.",
+        "Generate an SSH key first: <code>ssh-keygen -t ed25519 -C 'lfcs-lab'</code>",
+        "<strong>Destroy the lab when you finish for the week.</strong> Stopping an instance still bills you for its disk.",
+        "A cloud lab can't practise everything. Console-level work — interrupting the boot process, resetting a lost root password, editing the bootloader — needs a hypervisor where you control the virtual console. Do Week 6 locally even if everything else is hosted."
+      ]
+    }
+  },
+
+  "certs": {
+    "id": "certification-path",
+    "num": "05",
+    "eyebrow": "05 · Certification path",
+    "title": "The Certification Ladder",
+    "subtitle": "Where LFCS sits, and what pairs well with it",
+    "body": [
+      "LFCS is a solid mid-tier credential on its own — distro-neutral, performance-based, and respected wherever a job description says \"Linux\" without naming a vendor. It also slots cleanly next to a vendor-specific credential like RHCSA if your target employer runs Red Hat, or leads straight into LFCE if you want to keep climbing."
+    ],
+    "items": [
+      {
+        "n": 1,
+        "name": "LPI Linux Essentials",
+        "code": "010-160",
+        "codeUrl": "https://www.lpi.org/our-certifications/linux-essentials-overview",
+        "level": "Entry level · optional starting point",
+        "timing": "Optional — after Week 2",
+        "cost": "~$120",
+        "featured": false,
+        "why": "The gentlest on-ramp there is. If you're genuinely new to Linux and want a cheap, low-pressure way to prove to yourself you can do this before spending $445, this is it.",
+        "prep": [
+          { "label": "LPI Linux Essentials overview", "url": "https://www.lpi.org/our-certifications/linux-essentials-overview" },
+          { "label": "Learn Linux For Work", "url": "https://www.learnlinuxforwork.com" }
+        ]
+      },
+      {
+        "n": 2,
+        "name": "Linux Foundation Certified System Administrator",
+        "code": "LFCS",
+        "codeUrl": "https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/",
+        "level": "The goal · performance-based, distro-neutral",
+        "timing": "End of Week 12",
+        "cost": "$445",
+        "featured": true,
+        "why": "The certification this entire course is built around. Two hours, live command line, no distro favoritism.",
+        "prep": [
+          { "label": "learnlinuxforwork.com", "url": "https://www.learnlinuxforwork.com" },
+          { "label": "Doc Linux", "url": "https://learnlinuxforwork.com/doc-linux" },
+          { "label": "killer.sh simulator", "url": "https://killer.sh/lfcs" }
+        ]
+      },
+      {
+        "n": 3,
+        "name": "Red Hat Certified System Administrator",
+        "code": "RHCSA / EX200",
+        "codeUrl": "https://rhcsa.learnlinuxforwork.com",
+        "level": "Vendor-specific · optional pairing",
+        "timing": "Optional — before or after LFCS",
+        "cost": "~$500",
+        "featured": false,
+        "why": "If your target employer runs Red Hat specifically, RHCSA is the name they'll ask for by name. The overlap with what you've just learned is large — this is largely a vendor-specific dialect of the same skills.",
+        "prep": [
+          { "label": "rhcsa.learnlinuxforwork.com", "url": "https://rhcsa.learnlinuxforwork.com" }
+        ]
+      },
+      {
+        "n": 4,
+        "name": "Linux Foundation Certified Engineer",
+        "code": "LFCE",
+        "codeUrl": "https://training.linuxfoundation.org/",
+        "level": "Advanced · natural next step",
+        "timing": "After LFCS",
+        "cost": "~$445",
+        "featured": false,
+        "why": "The advanced counterpart to LFCS, going deeper on the same distro-neutral philosophy. A current LFCS is generally treated as the on-ramp.",
+        "prep": [
+          { "label": "Linux Foundation training", "url": "https://training.linuxfoundation.org/" }
+        ]
+      }
+    ],
+    "note": {
+      "kind": "info",
+      "title": "Skip the extras if you're confident and short on money",
+      "text": "Linux Essentials is a confidence builder, not a prerequisite. If you've sat proctored exams before and money is tight, go straight at LFCS and put the savings toward a retake if you need one."
+    }
+  },
+
+  "coverage": {
+    "id": "coverage-map",
+    "num": "06",
+    "eyebrow": "06 · Coverage",
+    "title": "Exam Domain Coverage Map",
+    "subtitle": "All five LFCS domains, mapped to the weeks that cover them",
+    "intro": "The Linux Foundation groups the LFCS objectives into five domains. Every one is covered, weighted roughly by how much of the exam it's worth.",
+    "columns": ["LFCS domain", "Weight", "What you'll actually be able to do", "Weeks"],
+    "rows": [
+      ["Essential Commands", "20%", "Shell fluency, redirection and pipes, grep and regex, Git branching/merging, creating a systemd service unit, reading performance counters, generating and reading an SSL certificate", "1, 2"],
+      ["Users and Groups", "10%", "Create/modify/delete users and groups, configure sudo, set environment and shell profiles, apply resource limits with ulimit, set ACLs, bind a system to LDAP for authentication", "3"],
+      ["Operations Deployment — software & recovery", "25%", "Manage kernel modules and parameters, install/update/remove packages on both families, schedule work with cron/at/systemd timers, take and restore a backup", "4, 5"],
+      ["Operations Deployment — virtualization & security", "25%", "Build and manage a local VM, run and manage containers, read and fix an SELinux or AppArmor denial", "6"],
+      ["Storage", "20%", "Partition a disk, build and extend an LVM volume, create and mount ext4/XFS filesystems, mount an NFS share, configure swap, read iostat/vmstat output", "7, 8"],
+      ["Networking", "25%", "Configure IPv4/IPv6 addressing on both families, set up DNS resolution, sync time with chrony/NTP, harden SSH, filter packets, configure static routes, bond interfaces, stand up a basic load balancer", "9, 10"]
+    ]
+  },
+
+  "weeks": {
+    "id": "the-plan",
+    "num": "07",
+    "eyebrow": "07 · The plan",
+    "title": "The 12-Week Plan",
+    "subtitle": "Check tasks off as you go — your progress is saved in this browser",
+    "items": [
+      {
+        "id": "week-01",
+        "n": 1,
+        "title": "Shell, Permissions, and Text Processing",
+        "domain": "Essential Commands",
+        "hours": "8–10",
+        "summary": "The commands you'll use in every other week, drilled on both distro families from day one.",
+        "tasks": [
+          "Navigate the filesystem hierarchy and explain what lives in /etc, /var, /usr, and /home on both distros",
+          "Use redirection and pipes fluently: >, >>, |, 2>, 2>&1, and tee",
+          "Search text with grep and basic regular expressions — anchors, character classes, and quantifiers",
+          "Create, copy, move, and delete files and directories, including recursively and safely",
+          "Create hard links and symbolic links, and explain when each breaks",
+          "Read and set ugo/rwx permissions in both symbolic and octal form, plus a POSIX ACL with setfacl",
+          "Archive and compress with tar, gzip, and bzip2, and unpack all three",
+          "Connect to your second machine over SSH and switch users with su and sudo"
+        ],
+        "objectives": [
+          "Access a shell prompt and issue commands with correct syntax",
+          "Use input-output redirection",
+          "Use grep and regular expressions to analyze text",
+          "Create, delete, copy, and move files and directories",
+          "Create hard and soft links",
+          "Set and modify standard ugo/rwx permissions and POSIX ACLs",
+          "Archive, compress, unpack, and uncompress files",
+          "Access remote systems using SSH"
+        ]
+      },
+      {
+        "id": "week-02",
+        "n": 2,
+        "title": "Git, Services, and Performance Troubleshooting",
+        "domain": "Essential Commands",
+        "hours": "8–10",
+        "summary": "The less obvious half of Essential Commands: Git, writing your own systemd unit, and finding what's slow.",
+        "tasks": [
+          "Initialize a Git repo, stage and commit changes, and work with branches and merges",
+          "Resolve a merge conflict from the command line",
+          "Write a custom systemd service unit and enable it to survive reboot",
+          "Use top, ps, and free to identify what's consuming CPU, memory, and swap",
+          "Generate a self-signed SSL certificate with openssl and explain what a CSR is",
+          "Constrain a process or service with basic resource limits (nice/renice, systemd resource controls)"
+        ],
+        "objectives": [
+          "Operate a Git repository — init, add, commit, branch, merge, resolve conflicts",
+          "Create and manage systemd services and units",
+          "Identify CPU, memory, and disk performance bottlenecks",
+          "Manage application resource constraints",
+          "Generate and manage SSL certificates"
+        ]
+      },
+      {
+        "id": "week-03",
+        "n": 3,
+        "title": "Users, Groups, and Access Control",
+        "domain": "Users and Groups",
+        "hours": "8–10",
+        "summary": "The smallest domain by weight, easy marks if you get sudo, ACLs, and limits right.",
+        "tasks": [
+          "Create, modify, and delete local users and groups on both distro families",
+          "Configure passwordless and password-required sudo rules in /etc/sudoers.d/",
+          "Set and age passwords, and lock/unlock an account",
+          "Configure default environment variables and shell profiles in /etc/profile.d/ and per-user dotfiles",
+          "Apply per-user resource limits with ulimit and /etc/security/limits.conf",
+          "Set default and non-default ACLs on a shared directory with setfacl and getfacl",
+          "Bind a client to an LDAP directory for centralized authentication (SSSD)"
+        ],
+        "objectives": [
+          "Create, delete, and modify local user accounts",
+          "Create, delete, and modify local groups and group memberships",
+          "Configure superuser access",
+          "Configure user resource limits",
+          "Manage file access with ACLs",
+          "Configure a system to authenticate using LDAP"
+        ]
+      },
+      {
+        "id": "week-04",
+        "n": 4,
+        "title": "Packages, the Kernel, and Backups",
+        "domain": "Operations Deployment",
+        "hours": "8–10",
+        "summary": "Install and update software on both families, work with kernel modules, and back up before you break anything.",
+        "tasks": [
+          "Install, update, and remove packages with apt on Ubuntu and dnf on Rocky",
+          "Add and manage a third-party repository on both distros",
+          "List, load, and unload kernel modules with lsmod, modprobe, and rmmod",
+          "Read and set kernel parameters at runtime and persistently with sysctl",
+          "Take a filesystem-level backup with tar or rsync and restore from it",
+          "Explain the difference between a full, incremental, and differential backup"
+        ],
+        "objectives": [
+          "Manage software using distribution-specific package management tools",
+          "Manage and configure the Linux kernel and kernel modules",
+          "Perform basic system administration tasks including software maintenance",
+          "Implement disaster recovery — backup and restore data"
+        ]
+      },
+      {
+        "id": "week-05",
+        "n": 5,
+        "title": "Processes and Scheduled Work",
+        "domain": "Operations Deployment",
+        "hours": "8–10",
+        "summary": "Manage what's running and when it runs, from a one-off cron job to a recurring systemd timer.",
+        "tasks": [
+          "List, prioritize (nice/renice), and terminate processes safely",
+          "Identify a runaway process and stop it cleanly, then forcefully",
+          "Schedule a one-time job with at and a recurring job with cron",
+          "Write a systemd timer unit as a cron replacement and explain why you might prefer one",
+          "Read and interpret systemd unit dependency chains with systemctl list-dependencies",
+          "Boot into and change the default systemd target"
+        ],
+        "objectives": [
+          "Manage starting, stopping, and debugging of processes and services",
+          "Schedule tasks using cron and systemd timers",
+          "Manage system startup and change the default target",
+          "Monitor and manage running system state"
+        ]
+      },
+      {
+        "id": "week-06",
+        "n": 6,
+        "title": "Virtual Machines, Containers, and SELinux/AppArmor",
+        "domain": "Operations Deployment",
+        "hours": "8–10",
+        "summary": "The exam's virtualization and security objectives in one week — build a VM, run a container, fix a denial.",
+        "tasks": [
+          "Install libvirt/KVM and create a small VM from the command line with virt-install",
+          "Start, stop, and connect to a VM's console with virsh",
+          "Install Docker or Podman and run, stop, and inspect a container",
+          "Build a minimal container image from a Dockerfile/Containerfile",
+          "Read an SELinux AVC denial in the audit log and fix it with restorecon or a boolean (Rocky)",
+          "Read an AppArmor denial and put a profile into enforce or complain mode (Ubuntu)"
+        ],
+        "objectives": [
+          "Deploy, configure, and maintain virtual machines",
+          "Deploy, configure, and maintain containers",
+          "Manage and configure SELinux or AppArmor",
+          "Diagnose and resolve mandatory access control denials"
+        ]
+      },
+      {
+        "id": "week-07",
+        "n": 7,
+        "title": "Partitions, LVM, and Filesystems",
+        "domain": "Storage",
+        "hours": "10–12",
+        "summary": "This is where the second disk you added in the home lab starts earning its keep.",
+        "tasks": [
+          "List, create, and delete GPT partitions with parted or fdisk",
+          "Build a physical volume, volume group, and logical volume with LVM",
+          "Extend a logical volume and its filesystem without unmounting it",
+          "Create ext4 and XFS filesystems and explain when you'd pick each",
+          "Mount a filesystem at boot by UUID via /etc/fstab, on both distros",
+          "Add and enable swap space, both as a partition and as a swap file"
+        ],
+        "objectives": [
+          "Create and configure LVM storage",
+          "Create, manage, and troubleshoot filesystems",
+          "Manage swap space",
+          "Configure and mount local filesystems persistently"
+        ]
+      },
+      {
+        "id": "week-08",
+        "n": 8,
+        "title": "Remote Storage and Performance Monitoring",
+        "domain": "Storage",
+        "hours": "8–10",
+        "summary": "Mount someone else's disk over the network, and learn to read the numbers when storage is the bottleneck.",
+        "tasks": [
+          "Export an NFS share from one lab machine and mount it on the other, persistently",
+          "Configure autofs to mount an NFS share on demand",
+          "Explain what a virtual filesystem is and inspect /proc and /sys",
+          "Read iostat, vmstat, and df/du output to diagnose a storage bottleneck",
+          "Find and reclaim disk space consumed by open-but-deleted files"
+        ],
+        "objectives": [
+          "Manage and configure remote (network) filesystems",
+          "Understand and manage virtual filesystems",
+          "Monitor storage performance",
+          "Diagnose and correct storage-related problems"
+        ]
+      },
+      {
+        "id": "week-09",
+        "n": 9,
+        "title": "IP Addressing, DNS, and SSH",
+        "domain": "Networking",
+        "hours": "8–10",
+        "summary": "The first half of the exam's biggest domain: get two machines talking and resolving names correctly.",
+        "tasks": [
+          "Configure a static IPv4 and IPv6 address with nmcli (Rocky) and netplan/systemd-networkd (Ubuntu)",
+          "Configure DNS resolution and explain the systemd-resolved / /etc/resolv.conf relationship",
+          "Synchronize system time with chrony and verify sync status",
+          "Harden SSH: disable root login, enforce key-based auth, change the listening port",
+          "Copy a file between the lab machines with scp and rsync over SSH",
+          "Use ss and ip to inspect current connections and interface state"
+        ],
+        "objectives": [
+          "Configure IPv4 and IPv6 networking",
+          "Configure and use DNS resolution",
+          "Configure network time synchronization",
+          "Configure and secure SSH access",
+          "Diagnose and correct networking problems"
+        ]
+      },
+      {
+        "id": "week-10",
+        "n": 10,
+        "title": "Firewalls, Routing, Bonding, and Load Balancing",
+        "domain": "Networking",
+        "hours": "10–12",
+        "summary": "The second half of Networking — everything after the packet leaves the box.",
+        "tasks": [
+          "Filter traffic with firewalld (Rocky) and ufw/nftables (Ubuntu), matching the same rule on both",
+          "Add a static route and explain the default route / gateway relationship",
+          "Bond two network interfaces and verify failover",
+          "Stand up a minimal HTTP load balancer with HAProxy or nginx in front of two backend hosts",
+          "Capture and read basic traffic with tcpdump to confirm a rule is actually working"
+        ],
+        "objectives": [
+          "Implement packet filtering",
+          "Configure routes and static routing",
+          "Configure network interface bonding",
+          "Configure a basic load balancer",
+          "Troubleshoot network connectivity issues"
+        ]
+      },
+      {
+        "id": "week-11",
+        "n": 11,
+        "title": "Integration and Break/Fix Week",
+        "domain": "All five domains",
+        "hours": "10–12",
+        "summary": "No new material. Combine everything into realistic, multi-step problems and time yourself.",
+        "tasks": [
+          "Run three timed 45-minute drills that each cross at least two domains (e.g. LVM + NFS + a firewall rule)",
+          "Roll both lab machines back to a clean snapshot and rebuild the full two-machine topology from scratch",
+          "Deliberately break five things — one per domain — without writing down what you did, then diagnose and fix each cold",
+          "Re-read the official LFCS domain list end to end and flag anything you can't do without looking it up"
+        ],
+        "objectives": [
+          "Demonstrate essential commands under time pressure",
+          "Demonstrate users and groups tasks under time pressure",
+          "Demonstrate operations deployment tasks under time pressure",
+          "Demonstrate storage tasks under time pressure",
+          "Demonstrate networking tasks under time pressure"
+        ]
+      },
+      {
+        "id": "week-12",
+        "n": 12,
+        "title": "Mock Exam, Remediation, and Exam Day",
+        "domain": "Putting it together",
+        "hours": "10–12",
+        "summary": "A full timed mock exam under real conditions, remediation of everything you missed, and exam-day logistics.",
+        "tasks": [
+          "Roll both lab machines back to a clean snapshot",
+          "Sit a full 2-hour timed mock exam — no notes, no internet, man pages only",
+          "Score yourself honestly against the five domains and identify your weakest one",
+          "Rebuild the labs for every missed objective, from scratch, untimed",
+          "Book the exam and complete the proctoring system check the day before",
+          "Sit a second mock in the final 48 hours, then rest"
+        ],
+        "objectives": [
+          "Complete a full performance-based exam simulation within the time limit",
+          "Identify and remediate weak domains",
+          "Understand the proctoring and exam-day requirements"
+        ]
+      }
+    ]
+  },
+
+  "labs": {
+    "id": "lab-guides",
+    "num": "08",
+    "eyebrow": "08 · Lab guides",
+    "title": "Lab Guides",
+    "subtitle": "One standalone guide per week — real commands on both distro families, verification steps, and a break/fix drill",
+    "intro": "Each guide is self-contained and follows the same shape: what you're building, the commands on Ubuntu <em>and</em> the commands on Rocky, how to verify it, a deliberate break to repair, and a final check. They print cleanly if you'd rather work from paper.",
+    "note": {
+      "kind": "info",
+      "title": "How to use a lab guide",
+      "text": "Read the whole guide first. Then close it and try the tasks from memory — on <em>both</em> distros if you have both VMs up. Open it again only when you're stuck, and write down what you had to look up. That list is your real study guide for Week 11."
+    }
+  },
+
+  "verify": {
+    "id": "employer-verification",
+    "num": "09",
+    "eyebrow": "09 · Employer verification",
+    "title": "Employer Verification",
+    "subtitle": "This course is free. A verifiable certificate of completion, if you want one, runs through a $20/month subscription you can cancel anytime",
+    "body": [
+      "Everything on this page — all 12 weeks, every lab guide — is free and always will be. It has no login and tracks nothing.",
+      "Some employers want more than your word that you did the work. Learn Linux For Work's paid course track wraps this same curriculum in a tracked account, so finishing it produces a certificate an employer can actually check — not just a PDF you made yourself. It's a $20/month subscription, not a one-time purchase: stay enrolled while you work through the weeks, then cancel as soon as you've got your certificate. You keep it either way."
+    ],
+    "startHere": {
+      "kind": "info",
+      "title": "How it works",
+      "steps": [
+        "Join Learn Linux For Work and enroll in the LFCS course track — $20/month, cancel anytime.",
+        "Work through the same 12 weeks and tasks on this page, tracked to your account instead of just your browser.",
+        "Finish the course and request your certificate — a shareable digital credential for LinkedIn, or a copy printed and mailed to your door. Cancel the subscription once you have it; the certificate is yours to keep."
+      ]
+    },
+    "groups": [
+      {
+        "step": "Choose one",
+        "title": "Two ways to prove it",
+        "intro": "Same certificate, delivered two ways — click either card to enroll and pick one once you finish.",
+        "items": [
+          {
+            "name": "Digital certificate",
+            "sub": "Included with enrollment",
+            "desc": "A certificate with a unique ID an employer can verify, plus a LinkedIn-ready credential you can add straight to your profile under Licenses &amp; Certifications. Download the PDF and print it yourself if you want a paper copy.",
+            "meta": "Instant",
+            "url": "https://learnlinuxforwork.com/courses/lfcs"
+          },
+          {
+            "name": "Printed & mailed certificate",
+            "sub": "Physical copy",
+            "desc": "The same certificate, professionally printed and mailed to your home address — for the wall, the interview folder, or a government contract file that wants a hard copy on record.",
+            "meta": "+ shipping",
+            "url": "https://learnlinuxforwork.com/courses/lfcs"
+          }
+        ]
+      }
+    ],
+    "note": {
+      "title": "Join Learn Linux For Work",
+      "text": "Enroll in the LFCS course for $20/month and turn your progress on this page into a certificate you can put in front of an employer. Cancel anytime — including right after you get your certificate.",
+      "url": "https://learnlinuxforwork.com/courses/lfcs",
+      "label": "Enroll — $20/mo"
+    }
+  },
+
+  "resources": {
+    "id": "resources",
+    "num": "10",
+    "eyebrow": "10 · Resources",
+    "title": "Core Resource List",
+    "subtitle": "Free and low-cost, and every one of them is linked",
+    "groups": [
+      {
+        "category": "The authoritative source",
+        "items": [
+          { "name": "LFCS certification details", "url": "https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/", "desc": "The Linux Foundation's own page — domains, weightings, format, and pricing. The only definitive statement of what's testable." },
+          { "name": "killer.sh LFCS simulator", "url": "https://killer.sh/lfcs", "desc": "Timed, realistic practice environment that mirrors the real exam interface." },
+          { "name": "Linux Foundation training catalogue", "url": "https://training.linuxfoundation.org/", "desc": "Official courses, including the bundled LFS207 prep course." }
+        ]
+      },
+      {
+        "category": "Getting the operating systems",
+        "items": [
+          { "name": "Ubuntu Server", "url": "https://ubuntu.com/download/server", "desc": "Free, no account. The Debian-family half of your home lab." },
+          { "name": "Rocky Linux", "url": "https://rockylinux.org/", "desc": "Free, no account. The RPM-family half of your home lab." },
+          { "name": "Debian", "url": "https://www.debian.org/distrib/", "desc": "The upstream Ubuntu is built on, if you'd rather practise closer to the source." }
+        ]
+      },
+      {
+        "category": "Hypervisors and home lab",
+        "items": [
+          { "name": "Oracle VirtualBox", "url": "https://www.virtualbox.org/", "desc": "Free, cross-platform, one-click snapshots. The default recommendation for this course." },
+          { "name": "VMware Workstation Pro", "url": "https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion", "desc": "Free for personal use under Broadcom." },
+          { "name": "KVM / virt-manager", "url": "https://virt-manager.org/", "desc": "If your host is already Linux — the same stack the exam's VM objective expects." },
+          { "name": "UTM", "url": "https://mac.getutm.app/", "desc": "The practical option on Apple Silicon, where VirtualBox doesn't run." }
+        ]
+      },
+      {
+        "category": "Practice under pressure",
+        "items": [
+          { "name": "killer.sh", "url": "https://killer.sh/lfcs", "desc": "Your primary mock-exam tool — two sessions included with the real exam purchase." },
+          { "name": "LabEx", "url": "https://labex.io/", "desc": "Guided live-environment Linux labs. Useful for extra repetitions between modules." },
+          { "name": "KodeKloud", "url": "https://kodekloud.com/", "desc": "Browser-based Linux and DevOps playgrounds with no setup." },
+          { "name": "Learn Linux For Work — hands-on labs", "url": "https://www.learnlinuxforwork.com", "desc": "Guided browser-based Linux labs. No hypervisor, nothing to install." }
+        ]
+      },
+      {
+        "category": "Reference and documentation",
+        "items": [
+          { "name": "Doc Linux", "url": "https://learnlinuxforwork.com/doc-linux", "desc": "Command reference and syntax lookups. Keep it open in a second tab while you lab." },
+          { "name": "Arch Wiki", "url": "https://wiki.archlinux.org/", "desc": "Not the exam's distro, but frequently the clearest single explanation of any given Linux subsystem on the internet." },
+          { "name": "man7.org Linux man-pages project", "url": "https://man7.org/linux/man-pages/", "desc": "The same man pages you'll have in the exam, readable in a browser while you study." }
+        ]
+      },
+      {
+        "category": "Networking and storage deep dives",
+        "items": [
+          { "name": "HAProxy documentation", "url": "https://www.haproxy.org/#docs", "desc": "Official docs for the load-balancer objective, Week 10." },
+          { "name": "systemd-networkd docs", "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd.html", "desc": "The Ubuntu-side networking stack referenced throughout Weeks 9–10." },
+          { "name": "Red Hat's LVM documentation", "url": "https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_and_managing_logical_volumes/index", "desc": "Thorough, vendor-written, and the concepts transfer directly, Week 7." }
+        ]
+      },
+      {
+        "category": "Training and community",
+        "items": [
+          { "name": "Learn Linux For Work", "url": "https://www.learnlinuxforwork.com", "desc": "Structured, work-focused Linux training built for people heading into system administration roles." },
+          { "name": "The Hood", "url": "https://learnlinuxforwork.com", "desc": "Community space for questions and support." },
+          { "name": "r/linuxadmin", "url": "https://www.reddit.com/r/linuxadmin/", "desc": "Good for sanity checks and other people's exam-day write-ups." },
+          { "name": "Shea's Tech on YouTube", "url": "https://www.youtube.com/@sheastech", "desc": "Video walkthroughs, including what a Linux Foundation exam is actually like." }
+        ]
+      },
+      {
+        "category": "The confidence-builder and adjacent exams",
+        "items": [
+          { "name": "LPI — Linux Essentials", "url": "https://www.lpi.org/our-certifications/linux-essentials-overview", "desc": "The gentlest vendor-neutral entry point. A low-pressure first proctored exam before LFCS." },
+          { "name": "RHCSA course", "url": "https://rhcsa.learnlinuxforwork.com", "desc": "The vendor-specific counterpart to LFCS, if your target employer runs Red Hat." },
+          { "name": "Free AWS DevOps course", "url": "https://free.learnlinuxforwork.com", "desc": "Where to go next if the job is heading toward cloud and DevOps rather than on-prem sysadmin." }
+        ]
+      }
+    ]
+  },
+
+  "costs": {
+    "id": "costs",
+    "num": "11",
+    "eyebrow": "11 · Costs",
+    "title": "Estimated Costs",
+    "subtitle": "What this actually costs, with the optional parts marked",
+    "columns": ["Item", "Estimate"],
+    "rows": [
+      ["This course and all 12 lab guides", "$0"],
+      ["Ubuntu Server and Rocky Linux", "$0"],
+      ["Lab VMs on hardware you already own", "$0"],
+      ["<a href=\"https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/\" target=\"_blank\" rel=\"noopener\">LFCS exam</a>", "$445"],
+      ["Cloud lab, if your laptop can't host VMs", "~$10–20/month, less if you destroy it between sessions"],
+      ["LPI Linux Essentials confidence builder", "~$120 · optional"],
+      ["killer.sh simulator sessions", "Included with the exam purchase"],
+      ["Used lab laptop, only if your current machine can't spare the RAM", "~$100–$300 one-time"],
+      ["Exam retake, if it comes to that", "Budget for one — most people who fail, pass the second time"]
+    ],
+    "note": {
+      "kind": "danger",
+      "title": "The cheapest way to fail",
+      "text": "Booking the exam before you can finish a timed mock cleanly. The LFCS is two hours with no partial credit for approach — sitting it unprepared costs you $445 and a month of momentum. Pass a full mock on <em>both</em> distro families first, then book."
+    }
+  },
+
+  "examday": {
+    "id": "exam-day",
+    "num": "12",
+    "eyebrow": "12 · Exam day",
+    "title": "Exam Day and Staying On Track",
+    "subtitle": "The habits that get you there, and the checklist for the morning itself",
+    "tips": [
+      { "head": "Practise on both families, every week.", "text": "The single biggest cause of a missed task isn't not knowing the concept — it's only knowing one distro's command for it. Never let a week end with only one family drilled." },
+      { "head": "Keep a break/fix log.", "text": "Every error you hit and how you fixed it, in a text file on the machine. By Week 11 it becomes your personal study guide." },
+      { "head": "Live in the man pages.", "text": "They're the only documentation you get, and they read the same everywhere. Practise finding things with man -k until it's faster than searching would be." },
+      { "head": "Break things on purpose.", "text": "Every lab guide ends with a break/fix drill for a reason. Recovering a broken system under time pressure is the actual skill being tested." },
+      { "head": "Verify, then move on.", "text": "There's no partial credit. Finishing 15 tasks correctly beats starting 22. Check each one before you leave it." },
+      { "head": "Two hours moves fast.", "text": "Read every task once before you start any of them. Do the ones you know cold first, and don't let one hard task eat the time for three easy ones." },
+      { "head": "Book the exam to create a deadline.", "text": "Once you can pass a timed mock on both distro families, book it within two weeks. Open-ended study drifts." }
+    ],
+    "checklist": {
+      "title": "The morning of the exam",
+      "bullets": [
+        "Government-issued photo ID ready — check the name matches your Linux Foundation account exactly.",
+        "Test your machine, camera, and internet against the proctoring system check the day before, not the morning of.",
+        "Clear your desk completely. No notes, no books, no second monitor, no phone.",
+        "First ten minutes: read every task before you start any of them.",
+        "Last ten minutes: re-verify anything you rushed. There's no reboot check like RHCSA's, but there is no partial credit either — a task half-done scores the same as not attempted."
+      ]
+    },
+    "note": {
+      "kind": "info",
+      "title": "If you don't pass the first time",
+      "text": "It's a real exam and plenty of good administrators don't pass on the first attempt. Your purchase includes a second attempt within 12 months. Work your weakest domain for two weeks, sit another killer.sh session, and go again."
+    }
+  },
+
+  "story": {
+    "id": "story",
+    "num": "13",
+    "eyebrow": "13 · The why",
+    "title": "Why I Built This Guide",
+    "subtitle": "A note from Shea Bennett, founder of Shea's Tech",
+    "photo": "assets/img/Shea-Profile.png",
+    "photoFallback": "https://rhcsa.learnlinuxforwork.com/assets/img/Shea-Profile.png",
+    "photoAlt": "Shea Bennett, founder of Shea's Tech",
+    "linkedin": "https://www.linkedin.com/in/sheastech/",
+    "youtube": "https://www.youtube.com/@sheastech?sub_confirmation=1",
+    "body": [
+      "Shea Bennett started his career in Information Technology as a Helpdesk Analyst with no formal training or background in IT. He had no experience when he left the U.S. Navy, where he served as a Hospital Corpsman assigned to a Marine Corps battalion as a Fleet Marine Force (FMF) combat medic. His dream was to become a medical doctor, but the cost of medical education was simply too high — not something the Montgomery GI Bill alone could cover.",
+      "While working as a surgical technologist passing instruments at Naval Medical Center San Diego, he met engineers from a healthcare imaging company and asked one of them for help getting into IT. To his surprise, the man helped him land his first real IT job. Shea then spent the next few years training onsite at that company's headquarters in northern New Jersey, flying back and forth from San Diego. He struggled at first — he's a visual learner, and in 2007 the most common way to learn IT was in-person bootcamps or classroom training, neither of which he could afford.",
+      "Then he found video-based IT training, and never looked back. Shea is 100% self-taught. He went on to earn a Bachelor's and a Master's degree from National University in San Diego, and trained extensively alongside various government agencies and U.S. government IT contractors. He believes anyone can learn IT on their own without paying for a bootcamp — but that mentorship and networking, in person or on live video, are critical, because IT is a team sport.",
+      "This course exists for the same reason the RHCSA and AWS DevOps courses do: the LFCS is the certification employers ask for when they need a Linux administrator but don't want to commit to one vendor's ecosystem. It deserved a free, distro-neutral course to match — one that actually respects the \"independent of distribution\" promise instead of quietly teaching one distro and hoping it's close enough."
+    ],
+    "quote": [
+      "This was built for that fundi in Kenya, that hustler in Nigeria, the determined in Rwanda or Ethiopia. The hungry surviving in the UAE. The Indonesian or Filipino brother or sister — determined, but never given a chance or guidance."
+    ],
+    "closing": "If anything here is wrong, report it and we'll fix it."
+  },
+
+  "credits": {
+    "id": "credits",
+    "num": "14",
+    "eyebrow": "14 · Credits",
+    "title": "Credits and Trademarks",
+    "subtitle": "This course is independent. Every product named here belongs to somebody, and that somebody is not me.",
+    "body": [
+      "This is an independent, community-written study guide. It is <strong>not affiliated with, sponsored by, endorsed by, or certified by</strong> the Linux Foundation or any other organization named on this site. Nothing here is official courseware, and completing this course guarantees nothing about the exam.",
+      "All course text, lab guides, and scripts are original work by Shea, released under the GNU AGPL v3.0 or later. The exam domains themselves are published by the Linux Foundation and are the authoritative statement of what the LFCS covers — always check the source."
+    ],
+    "columns": ["Product or mark", "Belongs to", "Used here for"],
+    "rows": [
+      [
+        "Linux Foundation, LFCS, LFCE",
+        "The Linux Foundation",
+        "The certification this course prepares you for. The Linux Foundation publishes the exam domains this course maps to. <a href=\"https://www.linuxfoundation.org/\" target=\"_blank\" rel=\"noopener\">linuxfoundation.org</a>"
+      ],
+      [
+        "Ubuntu",
+        "Canonical Ltd.",
+        "The Debian-family half of the two-machine home lab used throughout this course. <a href=\"https://ubuntu.com/\" target=\"_blank\" rel=\"noopener\">ubuntu.com</a>"
+      ],
+      [
+        "Debian",
+        "Software in the Public Interest, Inc.",
+        "Named as the upstream Ubuntu is built on, referenced in the resource list. <a href=\"https://www.debian.org/\" target=\"_blank\" rel=\"noopener\">debian.org</a>"
+      ],
+      [
+        "Rocky Linux",
+        "Rocky Enterprise Software Foundation",
+        "The RPM-family half of the two-machine home lab, a free RHEL rebuild. <a href=\"https://rockylinux.org/\" target=\"_blank\" rel=\"noopener\">rockylinux.org</a>"
+      ],
+      [
+        "Red Hat, Red Hat Enterprise Linux, RHCSA, EX200",
+        "Red Hat, Inc.",
+        "Referenced as the upstream Rocky Linux tracks, and as the vendor-specific certification named in the Certification Ladder. <a href=\"https://www.redhat.com/\" target=\"_blank\" rel=\"noopener\">redhat.com</a>"
+      ],
+      [
+        "SELinux",
+        "United States National Security Agency, developed with Red Hat, Inc.",
+        "The mandatory access control system covered on the RPM side of Week 6. <a href=\"https://www.redhat.com/en/topics/linux/what-is-selinux\" target=\"_blank\" rel=\"noopener\">redhat.com/topics/linux/what-is-selinux</a>"
+      ],
+      [
+        "AppArmor",
+        "Canonical Ltd.",
+        "The mandatory access control system covered on the Debian side of Week 6. <a href=\"https://apparmor.net/\" target=\"_blank\" rel=\"noopener\">apparmor.net</a>"
+      ],
+      [
+        "Oracle VirtualBox",
+        "Oracle Corporation",
+        "The default hypervisor recommendation for the home lab. <a href=\"https://www.virtualbox.org/\" target=\"_blank\" rel=\"noopener\">virtualbox.org</a>"
+      ],
+      [
+        "VMware Workstation Pro, Fusion",
+        "Broadcom Inc.",
+        "An alternative hypervisor, free for personal use. <a href=\"https://www.vmware.com/\" target=\"_blank\" rel=\"noopener\">vmware.com</a>"
+      ],
+      [
+        "Docker",
+        "Docker, Inc.",
+        "Referenced as one option for the containers objective, Week 6. <a href=\"https://www.docker.com/\" target=\"_blank\" rel=\"noopener\">docker.com</a>"
+      ],
+      [
+        "Podman",
+        "Red Hat, Inc. and the Podman community",
+        "Referenced as the rootless, daemonless alternative for the containers objective, Week 6. <a href=\"https://podman.io/\" target=\"_blank\" rel=\"noopener\">podman.io</a>"
+      ],
+      [
+        "HAProxy",
+        "HAProxy Technologies",
+        "Referenced for the load-balancer objective, Week 10. <a href=\"https://www.haproxy.org/\" target=\"_blank\" rel=\"noopener\">haproxy.org</a>"
+      ],
+      [
+        "nginx",
+        "F5, Inc.",
+        "Referenced as an alternative for the load-balancer objective, Week 10. <a href=\"https://nginx.org/\" target=\"_blank\" rel=\"noopener\">nginx.org</a>"
+      ],
+      [
+        "Git",
+        "Software Freedom Conservancy",
+        "Version control covered under the Essential Commands domain, Week 2. <a href=\"https://git-scm.com/\" target=\"_blank\" rel=\"noopener\">git-scm.com</a>"
+      ],
+      [
+        "OpenLDAP",
+        "The OpenLDAP Foundation",
+        "Referenced for the LDAP integration objective, Week 3. <a href=\"https://www.openldap.org/\" target=\"_blank\" rel=\"noopener\">openldap.org</a>"
+      ],
+      [
+        "killer.sh",
+        "killer.sh",
+        "Exam simulator referenced for LFCS preparation. <a href=\"https://killer.sh/\" target=\"_blank\" rel=\"noopener\">killer.sh</a>"
+      ],
+      [
+        "LPI, Linux Essentials",
+        "Linux Professional Institute",
+        "Named as an optional vendor-neutral certification path. <a href=\"https://www.lpi.org/\" target=\"_blank\" rel=\"noopener\">lpi.org</a>"
+      ],
+      [
+        "Google Cloud, AWS, DigitalOcean, Vultr",
+        "Google LLC, Amazon.com Inc., DigitalOcean Holdings Inc., The Constant Company LLC",
+        "Cloud providers listed as self-managed hosting options for the two-machine lab."
+      ],
+      [
+        "Linux",
+        "Linus Torvalds",
+        "The kernel every distro in this course runs on, registered trademark in the US and other countries."
+      ]
+    ],
+    "note": {
+      "kind": "info",
+      "title": "Trademark notice",
+      "text": "All trademarks, service marks, and trade names are the property of their respective owners. Their use here is nominative — to identify the products this course teaches you to use — and does not imply any affiliation with or endorsement by the trademark holders. If you own one of these marks and want the wording changed, <a href=\"https://github.com/learnlinuxforwork/lfcs/issues\" target=\"_blank\" rel=\"noopener\">open an issue</a> and it will be fixed."
+    }
+  }
+}

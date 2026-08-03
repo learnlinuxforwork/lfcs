@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 2: Git, Services, and Performance Troubleshooting — LFCS Course</title>
+<meta name="description" content="The less obvious half of Essential Commands: version control, writing your own systemd unit, and finding what's slow.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 2 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-02">&larr; Back to Week 2</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 2</div>
+    <h1>Git, Services, and Performance Troubleshooting</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The less obvious half of Essential Commands: version control, writing your own systemd unit, and finding what's slow.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Week 1 complete</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Git installed on both machines: <code>sudo apt install -y git</code> (Ubuntu) / <code>sudo dnf install -y git</code> (Rocky)</li><li>You can sudo on both machines</li></ul></div>
+
+  <div class="step"><h2>1. Git fundamentals</h2><p>The exam expects you to operate a repo from the command line, not to explain what Git is.</p><div class="cmd"><div class="cmd__t">Init, configure, and commit</div><pre>mkdir ~/lfcs-repo && cd ~/lfcs-repo
+git init
+git config user.name "Lab User"
+git config user.email "lab@example.com"
+echo 'first line' > notes.txt
+git add notes.txt
+git commit -m 'first commit'</pre></div><div class="cmd"><div class="cmd__t">Branch, edit, and merge</div><pre>git branch feature-a
+git switch feature-a
+echo 'branch change' >> notes.txt
+git commit -am 'edit on feature-a'
+git switch main 2>/dev/null || git switch master
+git merge feature-a</pre></div></div><div class="step"><h2>2. Resolve a merge conflict</h2><p>This will happen on the exam if it happens at all — practise the mechanical steps, not the theory.</p><div class="cmd"><div class="cmd__t">Create a real conflict on purpose</div><pre>git switch -c conflict-a
+echo 'version A' > conflict.txt && git add conflict.txt && git commit -m 'A'
+git switch main 2>/dev/null || git switch master
+git switch -c conflict-b
+echo 'version B' > conflict.txt && git add conflict.txt && git commit -m 'B'
+git switch main 2>/dev/null || git switch master
+git merge conflict-a
+git merge conflict-b</pre></div><div class="cmd"><div class="cmd__t">Resolve it and finish the merge</div><pre>cat conflict.txt
+echo 'resolved content' > conflict.txt
+git add conflict.txt
+git commit -m 'resolve conflict'</pre></div></div><div class="step"><h2>3. Write a custom systemd service</h2><p>Services you write yourself, not just ones you enable, are testable.</p><div class="cmd"><div class="cmd__t">Create a tiny long-running script and a unit for it</div><pre>sudo tee /usr/local/bin/lfcs-heartbeat.sh >/dev/null <<'EOF'
+#!/usr/bin/env bash
+while true; do echo "heartbeat $(date)" >> /var/log/lfcs-heartbeat.log; sleep 30; done
+EOF
+sudo chmod +x /usr/local/bin/lfcs-heartbeat.sh</pre></div><div class="cmd"><div class="cmd__t">The unit file (identical on both distros)</div><pre>sudo tee /etc/systemd/system/lfcs-heartbeat.service >/dev/null <<'EOF'
+[Unit]
+Description=LFCS lab heartbeat
+
+[Service]
+ExecStart=/usr/local/bin/lfcs-heartbeat.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now lfcs-heartbeat.service
+systemctl status lfcs-heartbeat.service --no-pager</pre></div></div><div class="step"><h2>4. Find what's slow</h2><p>top, ps, and free in that order — resource hog, then confirm with the process table, then confirm memory pressure.</p><div class="cmd"><div class="cmd__t">Live view, then a one-shot snapshot</div><pre>top -bn1 | head -15
+ps aux --sort=-%cpu | head -6
+free -h</pre></div><div class="cmd"><div class="cmd__t">Watch the heartbeat service you just created</div><pre>ps aux | grep lfcs-heartbeat | grep -v grep
+tail -5 /var/log/lfcs-heartbeat.log</pre></div></div><div class="step"><h2>5. SSL certificates</h2><p>You won't run a CA on the exam, but you will be expected to generate and inspect a certificate.</p><div class="cmd"><div class="cmd__t">Generate a self-signed cert and inspect it (identical on both distros)</div><pre>openssl req -x509 -nodes -newkey rsa:2048 \
+  -keyout ~/lab02.key -out ~/lab02.crt -days 365 \
+  -subj "/CN=lab02.local"
+openssl x509 -in ~/lab02.crt -noout -subject -dates</pre></div></div><div class="step"><h2>6. Constrain a process</h2><p>nice/renice for scheduling priority, and a resource limit at the systemd level.</p><div class="cmd"><div class="cmd__t">Lower a process's priority</div><pre>sleep 300 &
+ps -o pid,ni,cmd -p $!
+renice 10 -p $!
+ps -o pid,ni,cmd -p $!
+kill $!</pre></div><div class="cmd"><div class="cmd__t">Cap memory for a systemd service (identical on both distros)</div><pre>sudo systemctl edit lfcs-heartbeat.service --force --full <<'EOF'
+[Unit]
+Description=LFCS lab heartbeat
+
+[Service]
+ExecStart=/usr/local/bin/lfcs-heartbeat.sh
+Restart=always
+MemoryMax=50M
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart lfcs-heartbeat.service</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>git log --oneline           # both commits and the resolved merge are present</li><li>systemctl is-active lfcs-heartbeat.service</li><li>openssl x509 -in ~/lab02.crt -noout -subject</li><li>systemctl show lfcs-heartbeat.service -p MemoryMax</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo systemctl edit lfcs-heartbeat.service --force --full
+# delete the [Service] block entirely, save</pre></div><p><strong>What you'll see:</strong> systemctl daemon-reload succeeds but the service fails to start — systemd complains the unit has no ExecStart.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo systemctl edit lfcs-heartbeat.service --force --full
+# restore ExecStart=/usr/local/bin/lfcs-heartbeat.sh, save
+sudo systemctl daemon-reload
+sudo systemctl restart lfcs-heartbeat.service</pre></div><p><strong>Why it matters:</strong> A unit file with no ExecStart is a common self-inflicted wound after an edit. Reading the exact systemctl status error and mapping it back to the missing directive is the actual skill.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-01.html">&larr; Lab 1</a></span>
+    <span><a class="btn btn--primary" href="week-03.html">Lab 3 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

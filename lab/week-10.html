@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 10: Firewalls, Routing, Bonding, and Load Balancing — LFCS Course</title>
+<meta name="description" content="The second half of Networking — everything after the packet leaves the box.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 10 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-10">&larr; Back to Week 10</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 10</div>
+    <h1>Firewalls, Routing, Bonding, and Load Balancing</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The second half of Networking — everything after the packet leaves the box.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">10-12 hours</span>
+      <span class="chip">Week 9 complete</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Both machines up and reachable</li><li>You've noted each machine's IP from last week</li></ul></div>
+
+  <div class="step"><h2>1. Filter traffic with a firewall</h2><p>Rocky ships firewalld by default; Ubuntu ships ufw on top of nftables. Learn to read both.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — ufw</div><pre>sudo ufw status verbose
+sudo ufw allow 2222/tcp comment 'lfcs ssh'
+sudo ufw allow from 192.168.56.0/24 to any port 80 proto tcp
+sudo ufw enable
+sudo ufw status numbered</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — firewalld</div><pre>sudo firewall-cmd --state
+sudo firewall-cmd --permanent --add-port=2222/tcp
+sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.56.0/24 port port=80 protocol=tcp accept'
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all</pre></div></div><div class="step"><h2>2. Read the same rules at the nftables level</h2><p>Both ufw and firewalld are front ends over nftables — knowing the underlying layer is what separates memorizing from understanding.</p><div class="cmd"><div class="cmd__t">Look underneath the front end</div><pre>sudo nft list ruleset | head -30</pre></div></div><div class="step"><h2>3. Static routing</h2><p>The concept and commands are identical everywhere — routing doesn't know what distro it's running on.</p><div class="cmd"><div class="cmd__t">Read the routing table, then add a static route</div><pre>ip route show
+sudo ip route add 10.10.10.0/24 via 192.168.56.1 dev eth1
+ip route show | grep 10.10.10
+sudo ip route del 10.10.10.0/24</pre></div></div><div class="step"><h2>4. Interface bonding</h2><p>Same bonding driver, same modes, on both distros — only the persistence layer differs slightly.</p><div class="cmd"><div class="cmd__t">Create an active-backup bond from two interfaces (adjust interface names to your lab)</div><pre>sudo modprobe bonding
+sudo ip link add bond0 type bond mode active-backup
+sudo ip link set eth1 down && sudo ip link set eth1 master bond0
+sudo ip link set eth2 down && sudo ip link set eth2 master bond0
+sudo ip link set bond0 up
+cat /proc/net/bonding/bond0 | head -15</pre></div></div><div class="step"><h2>5. A basic HAProxy load balancer</h2><p>Same package, same config file, same syntax on both distros.</p><div class="cmd"><div class="cmd__t">Install HAProxy and front two backend hosts</div><pre>sudo apt install -y haproxy 2>/dev/null || sudo dnf install -y haproxy
+sudo tee -a /etc/haproxy/haproxy.cfg >/dev/null <<'EOF'
+
+frontend lfcs_front
+    bind *:8080
+    default_backend lfcs_back
+
+backend lfcs_back
+    balance roundrobin
+    server web1 &lt;server-a-ip&gt;:80 check
+    server web2 &lt;server-b-ip&gt;:80 check
+EOF
+sudo systemctl enable --now haproxy
+curl -s http://localhost:8080/ | head -3</pre></div></div><div class="step"><h2>6. Confirm it's actually working with tcpdump</h2><p>The exam rewards proving a rule works, not just writing it.</p><div class="cmd"><div class="cmd__t">Capture a few packets while you hit the load balancer</div><pre>sudo apt install -y tcpdump 2>/dev/null || sudo dnf install -y tcpdump
+sudo timeout 5 tcpdump -i any port 8080 -c 5 &
+sleep 1
+curl -s http://localhost:8080/ >/dev/null
+wait</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>sudo ufw status | grep 2222 || sudo firewall-cmd --list-ports | grep 2222</li><li>ip route show | grep 192.168.56</li><li>cat /proc/net/bonding/bond0 | grep 'Currently Active Slave'</li><li>curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo ufw deny 8080/tcp 2>/dev/null; sudo firewall-cmd --permanent --add-port=8080/tcp --remove 2>/dev/null; sudo firewall-cmd --permanent --remove-port=8080/tcp 2>/dev/null; sudo firewall-cmd --reload 2>/dev/null</pre></div><p><strong>What you'll see:</strong> curl against the load balancer's port now hangs or is refused, even though HAProxy itself is running fine — the firewall is silently dropping the traffic before it ever reaches the service.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo ufw allow 8080/tcp 2>/dev/null
+sudo firewall-cmd --permanent --add-port=8080/tcp 2>/dev/null && sudo firewall-cmd --reload 2>/dev/null</pre></div><p><strong>Why it matters:</strong> A service being 'up' and a service being reachable are two different facts, and the exam tests the gap between them constantly. Always check the firewall before you start debugging the application.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-09.html">&larr; Lab 9</a></span>
+    <span><a class="btn btn--primary" href="week-11.html">Lab 11 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

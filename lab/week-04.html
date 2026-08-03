@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 4: Packages, the Kernel, and Backups — LFCS Course</title>
+<meta name="description" content="Install and update software on both families, work with kernel modules, and back up before you break anything.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 4 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-04">&larr; Back to Week 4</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 4</div>
+    <h1>Packages, the Kernel, and Backups</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">Install and update software on both families, work with kernel modules, and back up before you break anything.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Week 3 complete</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Both machines up and reachable over the internet for package installs</li></ul></div>
+
+  <div class="step"><h2>1. Install, update, and remove a package</h2><p>Same concept, different tool. Know both cold.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — apt</div><pre>sudo apt update
+sudo apt install -y tree
+tree --version
+sudo apt remove -y tree</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — dnf</div><pre>sudo dnf check-update
+sudo dnf install -y tree
+tree --version
+sudo dnf remove -y tree</pre></div></div><div class="step"><h2>2. Add and manage a third-party repository</h2><p>The repo config file lives in a different place, but the workflow is the same.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — Add a PPA-style / custom apt source</div><pre>curl -fsSL https://example-repo.invalid/key.gpg 2>/dev/null | sudo gpg --dearmor -o /usr/share/keyrings/example.gpg || true
+echo 'deb [signed-by=/usr/share/keyrings/example.gpg] https://example-repo.invalid/ stable main' | sudo tee /etc/apt/sources.list.d/example.list
+apt-cache policy 2>/dev/null | head -5</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — Add a .repo file</div><pre>sudo tee /etc/yum.repos.d/example.repo >/dev/null <<'EOF'
+[example]
+name=Example Repo
+baseurl=https://example-repo.invalid/rocky/
+enabled=1
+gpgcheck=0
+EOF
+dnf repolist</pre></div></div><div class="step"><h2>3. Kernel modules</h2><p>Same tools on both distros — modules are a kernel concept, not a distro one.</p><div class="cmd"><div class="cmd__t">List, inspect, load, and unload a harmless module</div><pre>lsmod | head
+modinfo dummy 2>/dev/null | head -8
+sudo modprobe dummy
+lsmod | grep dummy
+sudo rmmod dummy</pre></div></div><div class="step"><h2>4. Kernel parameters with sysctl</h2><p>Runtime change first, then make it survive a reboot.</p><div class="cmd"><div class="cmd__t">Read, change at runtime, then persist it</div><pre>sysctl net.ipv4.ip_forward
+sudo sysctl -w net.ipv4.ip_forward=1
+echo 'net.ipv4.ip_forward = 1' | sudo tee /etc/sysctl.d/99-lfcs-lab.conf
+sudo sysctl --system | grep ip_forward</pre></div></div><div class="step"><h2>5. Back up and restore</h2><p>The exam won't name a specific backup tool — it wants you to prove data survives.</p><div class="cmd"><div class="cmd__t">A full backup with tar, and a mirror with rsync</div><pre>mkdir -p ~/backup-target
+sudo tar -czf ~/backup-target/etc-full-$(date +%F).tar.gz /etc 2>/dev/null
+ls -lh ~/backup-target/
+sudo rsync -a /etc/ ~/backup-target/etc-rsync/ 2>/dev/null | tail -5</pre></div><div class="cmd"><div class="cmd__t">Prove the restore actually works</div><pre>sudo mkdir -p /tmp/restore-test
+sudo tar -xzf ~/backup-target/etc-full-$(date +%F).tar.gz -C /tmp/restore-test
+diff -rq /tmp/restore-test/etc /etc | head -5 || echo 'no meaningful differences'</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>lsmod | grep dummy &amp;&amp; echo 'still loaded — you forgot to rmmod' || echo 'clean'</li><li>sysctl net.ipv4.ip_forward     # should read 1</li><li>ls -lh ~/backup-target/etc-full-*.tar.gz</li><li>diff -rq /tmp/restore-test/etc /etc | wc -l</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>sudo mv /etc/sysctl.d/99-lfcs-lab.conf /etc/sysctl.d/99-lfcs-lab.conf.bak
+sudo sysctl -w net.ipv4.ip_forward=0</pre></div><p><strong>What you'll see:</strong> IP forwarding is off again, and it will come back off on every future reboot because the persistence file is gone.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo mv /etc/sysctl.d/99-lfcs-lab.conf.bak /etc/sysctl.d/99-lfcs-lab.conf
+sudo sysctl --system | grep ip_forward</pre></div><p><strong>Why it matters:</strong> A sysctl -w change without a matching file in /etc/sysctl.d/ never survives a reboot. This is the exact same "persistence" trap that shows up across the whole exam — a runtime change alone is worth nothing.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-03.html">&larr; Lab 3</a></span>
+    <span><a class="btn btn--primary" href="week-05.html">Lab 5 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>

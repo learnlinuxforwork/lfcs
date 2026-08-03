@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 3: Users, Groups, and Access Control — LFCS Course</title>
+<meta name="description" content="The smallest domain by weight, easy marks if you get sudo, ACLs, and limits right.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .lab-wrap { max-width: 860px; margin: 0 auto; padding: 30px 22px 90px; }
+  .lab-back { font-size: 13px; color: var(--text-3); display: inline-block; margin-bottom: 18px; }
+  .lab-h { margin-bottom: 22px; }
+  .lab-h h1 { font-size: 27px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .step { margin: 30px 0 0; }
+  .step h2 { font-size: 17px; margin-bottom: 6px; }
+  .step > p { color: var(--text-2); font-size: 14px; max-width: 72ch; }
+  .cmd { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow); }
+  .cmd__t { font-size: 12.5px; font-weight: 600; color: var(--text-2);
+             padding: 9px 14px; background: var(--bg-sunken); border-bottom: 1px solid var(--border); }
+  .cmd pre { margin: 0; padding: 14px; overflow-x: auto; font-family: var(--mono);
+              font-size: 12.8px; line-height: 1.65; color: var(--text); }
+  .lab-nav { display: flex; justify-content: space-between; gap: 12px;
+              margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); }
+  ol.verify { font-family: var(--mono); font-size: 12.8px; }
+  ol.verify li { margin-bottom: 6px; color: var(--text-2); }
+  @media print { .lab-back, .lab-nav, .header { display: none !important; } }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("lfcs.theme.v1");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="../index.html">
+    <span class="brand__mark brand__mark--logo"><img src="../assets/img/ST-Brain-Logo.png" alt="Shea's Tech" width="24" height="24"></span>
+    <span class="brand__text">
+      <span class="brand__title">LFCS Course</span>
+      <span class="brand__sub">From Learn Linux For Work · Lab 3 of 12</span>
+    </span>
+  </a>
+  <span class="header__spacer"></span>
+  <button class="btn btn--icon" data-theme-toggle title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="6" y2="18"/><line x1="18" y1="6" x2="19.8" y2="4.2"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="lab-wrap">
+  <a class="lab-back" href="../index.html#week-03">&larr; Back to Week 3</a>
+
+  <div class="lab-h">
+    <div class="section__eyebrow">Lab guide 3</div>
+    <h1>Users, Groups, and Access Control</h1>
+    <p style="color:var(--text-2);font-size:14.5px;max-width:74ch">The smallest domain by weight, easy marks if you get sudo, ACLs, and limits right.</p>
+    <div class="lab-meta">
+      <span class="chip chip--accent">8-10 hours</span>
+      <span class="chip">Week 2 complete</span>
+    </div>
+  </div>
+
+  <div class="callout"><div class="callout__title">Before you start</div><ul><li>Both machines up</li><li>You can sudo on both</li></ul></div>
+
+  <div class="step"><h2>1. Create and manage users and groups</h2><p>Same commands on both distros — this is genuinely distro-neutral territory.</p><div class="cmd"><div class="cmd__t">Create, add to a group, and set a password (identical on both distros)</div><pre>sudo groupadd lfcs-admins
+sudo useradd -m -G lfcs-admins -s /bin/bash lfcsuser
+sudo passwd lfcsuser
+id lfcsuser</pre></div><div class="cmd"><div class="cmd__t">Modify and delete</div><pre>sudo usermod -aG sudo lfcsuser 2>/dev/null || sudo usermod -aG wheel lfcsuser
+sudo userdel -r lfcsuser 2>/dev/null; echo 'delete tested, recreate for the rest of this lab'
+sudo useradd -m -G lfcs-admins -s /bin/bash lfcsuser
+sudo passwd lfcsuser</pre></div></div><div class="step"><h2>2. Configure sudo</h2><p>A malformed sudoers file locks out privilege escalation for everyone — always edit with visudo.</p><div class="cmd"><div class="cmd__t">Grant lfcsuser passwordless sudo for one command (identical on both distros)</div><pre>echo 'lfcsuser ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart lfcs-heartbeat.service' | sudo EDITOR='tee' visudo -f /etc/sudoers.d/lfcsuser
+sudo visudo -c</pre></div><div class="cmd"><div class="cmd__t">Test it as that user</div><pre>sudo -u lfcsuser sudo -n systemctl restart lfcs-heartbeat.service && echo 'sudo rule works'</pre></div></div><div class="step"><h2>3. Password aging and account locking</h2><p>Aging policy and locking are both tested, and both are easy to get backwards under pressure.</p><div class="cmd"><div class="cmd__t">Set aging, then lock and unlock (identical on both distros)</div><pre>sudo chage -M 90 -W 14 lfcsuser
+sudo chage -l lfcsuser
+sudo passwd -l lfcsuser
+sudo passwd -S lfcsuser
+sudo passwd -u lfcsuser</pre></div></div><div class="step"><h2>4. Environment and shell profiles</h2><p>System-wide defaults live in one place, per-user overrides in another. Know which wins.</p><div class="cmd"><div class="cmd__t">A system-wide variable for everyone, and a per-user override</div><pre>echo 'export LFCS_LAB=system-wide' | sudo tee /etc/profile.d/lfcs-lab.sh
+sudo chmod +x /etc/profile.d/lfcs-lab.sh
+sudo -u lfcsuser bash -lc 'echo $LFCS_LAB'
+sudo -u lfcsuser bash -c "echo 'export LFCS_LAB=per-user' >> ~lfcsuser/.bashrc"
+sudo -u lfcsuser bash -lc 'echo $LFCS_LAB'</pre></div></div><div class="step"><h2>5. Resource limits</h2><p>ulimit for the current shell, limits.conf for a persistent policy.</p><div class="cmd"><div class="cmd__t">Check and set a limit for the current session</div><pre>ulimit -n
+ulimit -n 2048
+ulimit -n</pre></div><div class="cmd"><div class="cmd__t">Make it persistent for lfcsuser (identical on both distros)</div><pre>echo 'lfcsuser soft nofile 4096' | sudo tee -a /etc/security/limits.conf
+echo 'lfcsuser hard nofile 8192' | sudo tee -a /etc/security/limits.conf</pre></div></div><div class="step"><h2>6. Access control lists</h2><p>Grant one extra user access to a shared directory without touching the owning group.</p><div class="cmd"><div class="cmd__t">Set and read default + explicit ACLs (identical on both distros)</div><pre>mkdir -p /tmp/shared-lab03
+sudo setfacl -d -m g:lfcs-admins:rwx /tmp/shared-lab03
+sudo setfacl -m u:lfcsuser:rwx /tmp/shared-lab03
+getfacl /tmp/shared-lab03</pre></div></div><div class="step"><h2>7. Bind to LDAP for centralized authentication</h2><p>You won't have a real LDAP server to bind to in most home labs, so this step confirms the tooling is installed and configured correctly — SSSD does the actual work on both distros.</p><div class="cmd"><div class="cmd__t">Ubuntu / Debian — Install SSSD tooling</div><pre>sudo apt install -y sssd sssd-tools libnss-sss libpam-sss
+sudo authselect select sss 2>/dev/null || echo 'authselect is a Rocky/RHEL tool — Ubuntu uses pam-auth-update instead'
+sudo pam-auth-update --enable sss</pre></div><div class="cmd"><div class="cmd__t">Rocky / RHEL — Install SSSD tooling</div><pre>sudo dnf install -y sssd sssd-tools oddjob-mkhomedir
+sudo authselect select sssd --force
+sudo authselect enable-feature with-mkhomedir</pre></div></div>
+
+  <div class="step">
+    <h2>Verify your work</h2>
+    <p>Run these before you consider the lab finished.</p>
+    <ol class="verify"><li>id lfcsuser                       # user exists, in lfcs-admins</li><li>sudo visudo -c                    # sudoers syntax is clean</li><li>sudo passwd -S lfcsuser           # account is unlocked, aging set</li><li>getfacl /tmp/shared-lab03 | grep lfcsuser</li></ol>
+  </div>
+
+  <div class="callout callout--warn"><div class="callout__title">Break it, then fix it</div><p><strong>Break:</strong></p><div class="cmd"><pre>echo 'lfcsuser ALL=(ALL) NOPASSWD ALL extra garbage here' | sudo tee /etc/sudoers.d/broken</pre></div><p><strong>What you'll see:</strong> sudo itself starts refusing every command, for every user, with a syntax error on load.</p><p><strong>Fix:</strong></p><div class="cmd"><pre>sudo visudo -c
+# it will name the broken file
+sudo rm /etc/sudoers.d/broken</pre></div><p><strong>Why it matters:</strong> This is exactly why you always edit sudoers files through visudo — it validates syntax before saving and refuses to let you lock yourself out. A raw editor won't stop you.</p></div>
+
+  <div class="lab-nav">
+    <span><a class="btn" href="week-02.html">&larr; Lab 2</a></span>
+    <span><a class="btn btn--primary" href="week-04.html">Lab 4 &rarr;</a></span>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div><strong>LFCS Course</strong> — lfcs.learnlinuxforwork.com<br>
+    Written by Shea. Licensed under the
+    <a href="https://learnlinuxforwork.com/license" target="_blank" rel="noopener noreferrer">GNU AGPL v3.0 or later</a>.</div>
+    <div class="footer__links">
+      <a href="../index.html">Course home</a>
+      <a href="https://www.learnlinuxforwork.com" target="_blank" rel="noopener noreferrer">Linux training</a>
+      <a href="https://killer.sh/lfcs" target="_blank" rel="noopener noreferrer">LFCS mocks</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/lab.js"></script>
+</body>
+</html>
