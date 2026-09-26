@@ -202,7 +202,13 @@
     h.push('<section class="section" id="' + cv.id + '">' + head(cv) +
       '<p class="prose">' + cv.intro + "</p>" +
       table(cv.columns, cv.rows.map(function (r) {
-        return [r[0], r[1], '<a class="chip chip--accent" href="#week-' + (r[2].length < 2 ? "0" + r[2] : r[2]) + '">Wk ' + r[2] + "</a>"];
+        var out = r.slice(0, -1);
+        var wk = r[r.length - 1];
+        out.push(wk ? String(wk).split(",").map(function (w) {
+          w = w.trim();
+          return w ? '<a class="chip chip--accent" href="#week-' + (w.length < 2 ? "0" + w : w) + '">Wk ' + w + "</a>" : "";
+        }).join(" ") : "");
+        return out;
       })) + "</section>");
 
     /* 06 weeks */
